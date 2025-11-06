@@ -3,7 +3,6 @@ import { TLoginFormData } from "@/components/modules/auth/LoginForm";
 import { envVariable } from "@/config/envConfig";
 
 const loginUser = async (loginInfo: TLoginFormData) => {
-  console.log(loginInfo);
   try {
     const res = await fetch(`${envVariable.baseApi}/auth/login`, {
       method: "POST",
@@ -15,11 +14,9 @@ const loginUser = async (loginInfo: TLoginFormData) => {
     });
 
     const data = await res.json();
-    console.log(data)
-    return data;
 
+    return data;
   } catch (err: any) {
-    console.log("Error in fun:", err);
     throw new Error(err.message || "An error occurred while loggin");
   }
 };

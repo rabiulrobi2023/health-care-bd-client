@@ -20,6 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import loginUser from "@/utils/loginUser";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import auth from "@/utils/auth";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.email("Invalid email address"),
@@ -32,28 +34,48 @@ export default function LoginForm() {
   const form = useForm<TLoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin1@gmail.com",
+      email: "",
       password: "111111",
     },
   });
 
+  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   const onSubmit = async (values: TLoginFormData) => {
+    setLoading(true);
     try {
       const res = await loginUser(values);
       if (res.success) {
+        const checkAuth = await auth();
+        if (checkAuth.user) {
+          const { role } = checkAuth.user;
+          switch (role) {
+            case "ADMIN":
+              router.push("/dashboard/admin");
+              break;
+            case "DOCTOR":
+              router.push("dashboard/doctor");
+              break;
+            case "PATIENT":
+              router.push("dashboar/patient");
+              break;
+            default:
+              router.push("/");
+              break;
+          }
+        }
         toast.success("User login successfully");
-        router.push("/dashboard/admin");
       }
     } catch (err) {
       toast.error("Failed to login");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSocialLogin = (provider: "google" | "github") => {
-    console.log(`Login with ${provider}`);
-  };
+  const handleSocialLogin = (provider: "google" | "github") => {};
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">

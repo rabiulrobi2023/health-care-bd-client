@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Token } from "./const/const";
 
 export function proxy(request: NextRequest) {
   const url = request.url;
-  const token = request.cookies.get("accessToken")?.value;
-  const { pathname } = request.nextUrl;
-  console.log(pathname);
+  const accessToken = request.cookies.get(Token.ACCESS_TOKEN)?.value;
+  const refreshToken = request.cookies.get(Token.REFRESH_TOKEN)?.value;
+  const path = request.nextUrl.pathname;
 
   const protectedRoutes = [
     "/dashboard",
@@ -15,16 +16,16 @@ export function proxy(request: NextRequest) {
   const authRoutes = ["/login", "/register", "/forgot-password"];
 
   const isProtectedRoute = protectedRoutes.some(
-    (route) => pathname === route || pathname.startsWith(route)
+    (route) => path === route || path.startsWith(route)
   );
 
-  const isAuthRoute = authRoutes.some((route) => pathname === route);
+  const isAuthRoute = authRoutes.some((route) => path === route);
 
-  if (isProtectedRoute && !token) {
-    return NextResponse.redirect(new URL("/login", url));
-  }
+if(isAuthRoute && !(accessToken && refreshToken)){
+  return NextResponse.redirect(new URL("/login"))
+}
 
-  if (isAuthRoute && token) {
+  if (isAuthRoute && accessToken) {
     return NextResponse.redirect(new URL("/", url));
   }
   return NextResponse.next();
