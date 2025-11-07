@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const LoginPage = () => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex-1 flex justify-center items-center  bg-gray-50">
       <div className="space-y-6 w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <div className="flex flex-col items-center justify-center">
           <Link

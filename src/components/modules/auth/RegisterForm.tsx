@@ -62,12 +62,22 @@ export default function RegisterForm() {
           <div className="lg:w-1/2 space-y-4">
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input type="text" name="name" placeholder="Rabiul Islam" />
+              <Input
+                type="text"
+                name="name"
+                placeholder="Rabiul Islam"
+                required
+              />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input type="email" name="email" placeholder="example@mail.com" />
+              <Input
+                type="email"
+                name="email"
+                placeholder="example@mail.com"
+                required
+              />
             </Field>
           </div>
 
@@ -78,12 +88,13 @@ export default function RegisterForm() {
                 type="text"
                 name="contactNumber"
                 placeholder="01750749762"
+                required
               />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="gender">Gender</FieldLabel>
-              <Select name="gender">
+              <Select name="gender" required>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
@@ -113,11 +124,11 @@ export default function RegisterForm() {
         <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Password name="password" />
+            <Password required name="password" />
           </Field>
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-            <Password name="confirmPassword" />
+            <Password name="confirmPassword" required />
           </Field>
         </div>
 

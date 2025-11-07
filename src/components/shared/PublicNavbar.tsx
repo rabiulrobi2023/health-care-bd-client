@@ -25,8 +25,8 @@ const PublicNavbar = () => {
     { name: "Contact", href: "/contact" },
   ];
   return (
-    <header className="sticky mx-auto top-0 z-50 h-16 w-full flex items-center gap-5 px-5  md:flex-row justify-between  md:justify-between bg-background border-b">
-      <div>
+    <header className="sticky mx-auto top-0 z-50 h-16 w-full flex items-center gap-5 px-5  md:flex-row justify-between  md:justify-between bg-background border-b px-0">
+      <div className="w-1/3">
         <Link
           href={"/"}
           className="text-primary w-full flex  font-xl md:text-2xl font-bold"
@@ -37,8 +37,8 @@ const PublicNavbar = () => {
           </div>
         </Link>
       </div>
-      <nav className="hidden md:block">
-        <ul className="flex gap-10">
+      <nav className="hidden md:block w-1/3">
+        <ul className="flex gap-10 justify-center items-center">
           {navItems.map((item, index) => (
             <Link key={index} href={item?.href}>
               {item.name}
@@ -47,8 +47,8 @@ const PublicNavbar = () => {
         </ul>
       </nav>
 
-      <div className="hidden md:block">
-        <Link href={"/login"}>
+      <div className="hidden md:block w-1/3">
+        <Link href={"/login"} className="flex items-end justify-end">
           <Button>Login</Button>
         </Link>
       </div>
