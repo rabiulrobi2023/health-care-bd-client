@@ -1,61 +1,62 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-
-import z from "zod";
 import Password from "@/components/ui/password";
-import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useActionState } from "react";
 
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { LoaderCircle } from "lucide-react";
-import { loginUser } from "@/services/auth/loginUser";
+import { loginUser } from "@/services/auth/login/auth.loginUser";
 
-const loginSchema = z.object({
-  email: z.email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
-
-export type TLoginFormData = z.infer<typeof loginSchema>;
-
-export default function LoginForm() {
+export default function LoginForm({redirect}: { redirect?: string }) {
   const [state, formAction, isPending] = useActionState(loginUser, null);
-  console.log(state);
-  const form = useForm<TLoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "111111",
-    },
-  });
+ 
+  const getFiedError = (fieldName: string) => {
+    if (state && state.errors) {
+      const error = state.errors.find((err: any) => err.field === fieldName);
 
+      return error?.message;
+    } else {
+      return null;
+    }
+  };
   return (
-    <form action={formAction} className="space-y-6 w-full">
+    <form action={formAction} className="w-full">
+      {redirect && (
+        <input type="hidden" name="redirect" value={redirect}></input>
+      )}
       <FieldGroup>
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input
-            type="email"
+            type="text"
             name="email"
             placeholder="example@mail.com"
-            required
+            defaultValue={"admin1@gmail.com"}
           />
+          {getFiedError("email") && (
+            <FieldDescription className="text-red-600">
+              {getFiedError("email")}
+            </FieldDescription>
+          )}
         </Field>
         <Field>
           <FieldLabel htmlFor="password">Password</FieldLabel>
-          <Password required name="password" />
+          <Password name="password" defaultValue={"111111"} />
+          {getFiedError("password") && (
+            <FieldDescription className="text-red-600">
+              {getFiedError("password")}
+            </FieldDescription>
+          )}
         </Field>
 
         <Button

@@ -19,65 +19,51 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { useActionState } from "react";
-import { registerPatient } from "@/services/auth/registerPagtient";
+import { registerPatient } from "@/services/auth/register/registerPatient";
 import { LoaderCircle } from "lucide-react";
 
-const registerSchema = z.object({
-  name: z.string("Name is required"),
-  email: z.email("Invalid email address"),
-  gender: z.enum(Object.keys(Gender), "Gender is rquired"),
-  contactNumber: z
-    .string("Contact number is required")
-    .regex(/^01[3-9]\d{8}$/, "Invalid mobile number")
-    .trim(),
-
-  address: z.string().optional(),
-  password: z
-    .string("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-  confirmPassword: z
-    .string("Confirm password is required")
-    .min(6, "Confirm must be at least 6 characters"),
-});
-
-export type TLoginFormData = z.infer<typeof registerSchema>;
-
 export default function RegisterForm() {
-  const form = useForm<TLoginFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      email: "",
-      password: "111111",
-    },
-  });
-
   const [state, formAction, isPending] = useActionState(registerPatient, null);
+  const getFiedError = (fieldName: string) => {
+    if (state && state.errors) {
+      const error = state.errors.find((err: any) => err.field === fieldName);
+
+      return error?.message;
+    } else {
+      return null;
+    }
+  };
 
   return (
-    <form action={formAction} {...form} className="space-y-6 w-full">
+    <form action={formAction} className="space-y-6 w-full">
       <FieldGroup>
         <div className="flex flex-col lg:flex-row gap-5 lg:gap-10 w-full ">
           <div className="lg:w-1/2 space-y-4">
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
-              <Input
-                type="text"
-                name="name"
-                placeholder="Rabiul Islam"
-                required
-              />
+              <Input type="text" name="name" placeholder="Rabiul Islam" />
+              {getFiedError("name") && (
+                <FieldDescription className="text-red-600">
+                  {getFiedError("name")}
+                </FieldDescription>
+              )}
             </Field>
 
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
-              <Input
-                type="email"
-                name="email"
-                placeholder="example@mail.com"
-                required
-              />
+              <Input type="email" name="email" placeholder="example@mail.com" />
+              {getFiedError("email") && (
+                <FieldDescription className="text-red-600">
+                  {getFiedError("email")}
+                </FieldDescription>
+              )}
             </Field>
           </div>
 
@@ -88,13 +74,17 @@ export default function RegisterForm() {
                 type="text"
                 name="contactNumber"
                 placeholder="01750749762"
-                required
               />
+              {getFiedError("contactNumber") && (
+                <FieldDescription className="text-red-600">
+                  {getFiedError("contactNumber")}
+                </FieldDescription>
+              )}
             </Field>
 
             <Field>
               <FieldLabel htmlFor="gender">Gender</FieldLabel>
-              <Select name="gender" required>
+              <Select name="gender">
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
@@ -109,6 +99,11 @@ export default function RegisterForm() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              {getFiedError("gender") && (
+                <FieldDescription className="text-red-600">
+                  {getFiedError("gender")}
+                </FieldDescription>
+              )}
             </Field>
           </div>
         </div>
@@ -124,29 +119,38 @@ export default function RegisterForm() {
         <div className="flex flex-col lg:flex-row gap-5 lg:gap-10">
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Password required name="password" />
+            <Password name="password" />
+            {getFiedError("password") && (
+              <FieldDescription className="text-red-600">
+                {getFiedError("password")}
+              </FieldDescription>
+            )}
           </Field>
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-            <Password name="confirmPassword" required />
+            <Password name="confirmPassword" />
+            {getFiedError("confirmPassword") && (
+              <FieldDescription className="text-red-600">
+                {getFiedError("confirmPassword")}
+              </FieldDescription>
+            )}
           </Field>
         </div>
-
-        <Button
-          type="submit"
-          className="w-full mt-2 font-bold"
-          disabled={isPending}
-        >
-          {isPending ? (
-            <>
-              <p>Register</p>
-              <LoaderCircle />
-            </>
-          ) : (
-            "Register"
-          )}
-        </Button>
       </FieldGroup>
+      <Button
+        type="submit"
+        className="w-full mt-2 font-bold"
+        disabled={isPending}
+      >
+        {isPending ? (
+          <>
+            <p>Register</p>
+            <LoaderCircle />
+          </>
+        ) : (
+          "Register"
+        )}
+      </Button>
     </form>
   );
 }

@@ -28,6 +28,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-600`}
+        cz-shortcut-listen="true"
       >
         <Toaster richColors position="top-center" />
         {children}

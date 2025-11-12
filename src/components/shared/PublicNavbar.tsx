@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import { logoutUser } from "@/services/auth/logout/auth.logoutUser";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { MenuIcon } from "lucide-react";
@@ -25,7 +26,7 @@ const PublicNavbar = () => {
     { name: "Contact", href: "/contact" },
   ];
   return (
-    <header className="sticky mx-auto top-0 z-50 h-16 w-full flex items-center gap-5 px-5  md:flex-row justify-between  md:justify-between bg-background border-b px-0">
+    <header className="sticky mx-auto top-0 z-50 h-16 w-full flex items-center gap-5 px-5 md:flex-row justify-between bg-background border-b">
       <div className="w-1/3">
         <Link
           href={"/"}
@@ -48,9 +49,11 @@ const PublicNavbar = () => {
       </nav>
 
       <div className="hidden md:block w-1/3">
-        <Link href={"/login"} className="flex items-end justify-end">
-          <Button>Login</Button>
-        </Link>
+        <div className="flex items-center justify-end gap-2">
+          <Link href={"/login"}>
+            <Button>Login</Button>
+          </Link>
+        </div>
       </div>
 
       {/* Mobile Responsive */}

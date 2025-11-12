@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Button } from "../../../ui/button";
+import Link from "next/link";
 
 const HeroLeftContent = () => {
   return (
@@ -24,13 +25,16 @@ const HeroLeftContent = () => {
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <Button
-          size="lg"
-          className="bg-[rgb(7,180,7)] hover:bg-[rgb(6,150,6)] text-white"
-        >
-          <UserCheck2 />
-          Register as Patient
-        </Button>
+        <Link href={"/register"}>
+          {" "}
+          <Button
+            size="lg"
+            className="bg-[rgb(7,180,7)] hover:bg-[rgb(6,150,6)] text-white"
+          >
+            <UserCheck2 />
+            Register as Patient
+          </Button>
+        </Link>
 
         <Button
           size="lg"
