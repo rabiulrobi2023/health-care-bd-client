@@ -1,13 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
-import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import z from "zod";
 import Password from "@/components/ui/password";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Gender } from "@/const/const";
 import {
   Select,
@@ -26,7 +21,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useActionState } from "react";
-import { registerPatient } from "@/services/auth/register/registerPatient";
+import { registerPatient } from "@/services/auth/registerPatient";
 import { LoaderCircle } from "lucide-react";
 
 export default function RegisterForm() {
@@ -34,7 +29,6 @@ export default function RegisterForm() {
   const getFiedError = (fieldName: string) => {
     if (state && state.errors) {
       const error = state.errors.find((err: any) => err.field === fieldName);
-
       return error?.message;
     } else {
       return null;

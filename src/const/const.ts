@@ -1,4 +1,4 @@
-export const Token = {
+export const Tokens = {
   ACCESS_TOKEN: "accessToken",
   REFRESH_TOKEN: "refreshToken",
 } as const;
@@ -20,3 +20,10 @@ export const RouteOwner = {
   ...UserRoles,
   NONE: "NONE",
 } as const;
+
+export const NextEnv = {
+  DEVELOPMENT: "DEVELOPMENT",
+  PRODUCTION: "PRODUCTION",
+} as const;
+
+

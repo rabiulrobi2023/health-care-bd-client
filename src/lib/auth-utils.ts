@@ -1,7 +1,5 @@
-import { envVariable } from "@/config/envConfig";
 import { RouteOwner } from "@/const/const";
 import { TRouteConfig, TRouteOwner, TUserRole } from "@/types/types";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
 const authRoutes = ["/login", "/register"];
 
@@ -63,14 +61,6 @@ export const getDefaultDashboard = (role: TUserRole): string => {
     return "/dashboard";
   }
   return "/";
-};
-
-export const verifyToken = (token: string): JwtPayload => {
-  const verifiedToken = jwt.verify(
-    token,
-    envVariable.JWT_ACCESS_SECRET as string
-  ) as JwtPayload;
-  return verifiedToken;
 };
 
 export const checkLoginUserAndRouteOwnerSame = (

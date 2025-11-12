@@ -1,28 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { RouteOwner, Token } from "./const/const";
+import { RouteOwner, Tokens } from "./const/const";
 import { TUserRole } from "./types/types";
 import { JwtPayload } from "jsonwebtoken";
 import {
   getDefaultDashboard,
   getRouteOwner,
   isAuthRoute,
-  verifyToken,
 } from "./lib/auth-utils";
+
+import { envVariable } from "./config/envConfig";
+import { deleteToken, getToken, verifyToken } from "./lib/token-utils";
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const accessToken = request.cookies.get(Token.ACCESS_TOKEN)?.value || null;
+  const accessToken = (await getToken(Tokens.ACCESS_TOKEN)) || null;
 
   let userRole: TUserRole | null = null;
 
   if (accessToken) {
     try {
-      const verifiedToken = verifyToken(accessToken) as JwtPayload;
+      const verifiedToken =await verifyToken(
+        accessToken,
+        envVariable.JWT_ACCESS_SECRET as string
+      ) as JwtPayload;
+   
       userRole = verifiedToken.role as TUserRole;
     } catch {
       const response = NextResponse.redirect(new URL("/login", request.url));
-      response.cookies.delete(Token.ACCESS_TOKEN);
-      response.cookies.delete(Token.REFRESH_TOKEN);
+      await deleteToken(Tokens.ACCESS_TOKEN);
+      await deleteToken(Tokens.REFRESH_TOKEN);
       return response;
     }
   }

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 
 import Password from "@/components/ui/password";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 import {
   Field,
@@ -15,11 +15,18 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { LoaderCircle } from "lucide-react";
-import { loginUser } from "@/services/auth/login/auth.loginUser";
+import { loginUser } from "@/services/auth/auth.loginUser";
+import { toast } from "sonner";
 
-export default function LoginForm({redirect}: { redirect?: string }) {
+export default function LoginForm({ redirect }: { redirect?: string }) {
   const [state, formAction, isPending] = useActionState(loginUser, null);
- 
+
+  useEffect(() => {
+    if (state && !state.success && state.message) {
+      toast.error(state.message);
+    }
+  }, [state]);
+
   const getFiedError = (fieldName: string) => {
     if (state && state.errors) {
       const error = state.errors.find((err: any) => err.field === fieldName);

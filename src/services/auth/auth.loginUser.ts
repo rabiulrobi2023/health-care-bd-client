@@ -4,15 +4,15 @@
 import { envVariable } from "@/config/envConfig";
 import z from "zod";
 import { parse } from "cookie";
-import { Token } from "@/const/const";
-import { cookies } from "next/headers";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import { Tokens } from "@/const/const";
+
+import { JwtPayload } from "jsonwebtoken";
 import {
   checkLoginUserAndRouteOwnerSame,
   getDefaultDashboard,
-  verifyToken,
 } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
+import { setToken, verifyToken } from "@/lib/token-utils";
 
 const loginValidationSchema = z.object({
   email: z
@@ -56,6 +56,12 @@ export const loginUser = async (currentState: any, formData: FormData) => {
       },
       credentials: "include",
     });
+
+    const result = await res.json();
+    if (!result.success) {
+      throw new Error(result.message || "Failed to login");
+    }
+
     const gottenCookies = res.headers.getSetCookie();
 
     if (!gottenCookies.length) {
@@ -67,10 +73,10 @@ export const loginUser = async (currentState: any, formData: FormData) => {
 
     gottenCookies.forEach((cookie) => {
       const parsedCookie = parse(cookie);
-      if (parsedCookie[Token.ACCESS_TOKEN]) {
+      if (parsedCookie[Tokens.ACCESS_TOKEN]) {
         accessTokenObject = parsedCookie;
       }
-      if (parsedCookie[Token.REFRESH_TOKEN]) {
+      if (parsedCookie[Tokens.REFRESH_TOKEN]) {
         refreshTokenObject = parsedCookie;
       }
     });
@@ -78,34 +84,33 @@ export const loginUser = async (currentState: any, formData: FormData) => {
     if (!accessTokenObject || !refreshTokenObject) {
       throw new Error("Missing authentication tokens");
     }
+    await setToken(
+      Tokens.ACCESS_TOKEN,
+      accessTokenObject.accessToken,
+      parseInt(accessTokenObject["Max-Age"]),
+      accessTokenObject.Path,
+      accessTokenObject.SameSite
+    );
 
-    const cookieStore = await cookies();
+    await setToken(
+      Tokens.REFRESH_TOKEN,
+      refreshTokenObject.refreshToken,
+      parseInt(accessTokenObject["Max-Age"]),
+      accessTokenObject.Path,
+      accessTokenObject.SameSite
+    );
 
-    cookieStore.set(Token.ACCESS_TOKEN, accessTokenObject.accessToken, {
-      secure: false,
-      httpOnly: true,
-      maxAge: parseInt(accessTokenObject["Max-Age"]) || 1000 * 60 * 60,
-      path: accessTokenObject.Path || "/",
-      sameSite: accessTokenObject["SameSite"] || "lax",
-    });
-
-    cookieStore.set(Token.REFRESH_TOKEN, refreshTokenObject.refreshToken, {
-      secure: false,
-      httpOnly: true,
-      maxAge:
-        parseInt(refreshTokenObject["Max-Age"]) || 1000 * 60 * 60 * 24 * 90,
-      path: refreshTokenObject.Path || "/",
-      sameSite: refreshTokenObject["SameSite"] || "lax",
-    });
-
-    const verifiedToken: JwtPayload | string = verifyToken(
-      accessTokenObject.accessToken
+    const verifiedToken: JwtPayload | string = await verifyToken(
+      accessTokenObject.accessToken,
+      envVariable.JWT_ACCESS_SECRET as string
     );
     if (typeof verifiedToken === "string") {
       throw new Error("Invalid token");
     }
 
-    if (redirectTo) {
+    if (redirectTo === null) {
+      redirect(getDefaultDashboard(verifiedToken.role));
+    } else {
       const isOwnerAndUserSame = checkLoginUserAndRouteOwnerSame(
         redirectTo as string,
         verifiedToken.user
@@ -116,8 +121,6 @@ export const loginUser = async (currentState: any, formData: FormData) => {
           ? (redirectTo as string)
           : getDefaultDashboard(verifiedToken.role)
       );
-    } else {
-      redirect(getDefaultDashboard(verifiedToken.role));
     }
   } catch (err: any) {
     if (err?.digest?.startsWith("NEXT_REDIRECT")) {
@@ -125,7 +128,7 @@ export const loginUser = async (currentState: any, formData: FormData) => {
     }
     return {
       success: false,
-      message: "Login fail",
+      message: err.message,
     };
   }
 };

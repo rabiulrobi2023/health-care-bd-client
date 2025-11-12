@@ -2,7 +2,9 @@
 "use server";
 import { envVariable } from "@/config/envConfig";
 import { Gender } from "@/const/const";
+import { redirect } from "next/dist/server/api-utils";
 import z from "zod";
+import { loginUser } from "./auth.loginUser";
 
 const registerValidationSchema = z
   .object({
@@ -76,10 +78,18 @@ export const registerPatient = async (
     const res = await fetch(`${envVariable.baseApi}/patient`, {
       method: "POST",
       body: newFormData,
-    }).then((res) => res.json());
+    });
 
-    return res;
-  } catch (err) {
+    const result = await res.json();
+
+    if (result.success) {
+      await loginUser(currentState, formData);
+    }
+    return result;
+  } catch (err: any) {
+    if (err?.digest?.startsWith("NEXT_REDIRECT")) {
+      throw err;
+    }
     return { error: "Registration fail" };
   }
 };

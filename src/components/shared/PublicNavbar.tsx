@@ -10,14 +10,18 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { logoutUser } from "@/services/auth/logout/auth.logoutUser";
+
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { MenuIcon } from "lucide-react";
 import Image from "next/image";
 import logo from "../../assets/images/logo.png";
 
-const PublicNavbar = () => {
+import { Tokens } from "@/const/const";
+import LogoutButton from "./LogoutButton";
+import { getToken } from "@/lib/token-utils";
+
+const PublicNavbar = async () => {
   const navItems = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
@@ -25,6 +29,8 @@ const PublicNavbar = () => {
     { name: "Reports", href: "/reports" },
     { name: "Contact", href: "/contact" },
   ];
+
+  const accessToken = await getToken(Tokens.ACCESS_TOKEN);
   return (
     <header className="sticky mx-auto top-0 z-50 h-16 w-full flex items-center gap-5 px-5 md:flex-row justify-between bg-background border-b">
       <div className="w-1/3">
@@ -50,9 +56,13 @@ const PublicNavbar = () => {
 
       <div className="hidden md:block w-1/3">
         <div className="flex items-center justify-end gap-2">
-          <Link href={"/login"}>
-            <Button>Login</Button>
-          </Link>
+          {accessToken ? (
+            <LogoutButton />
+          ) : (
+            <Link href={"/login"}>
+              <Button className="hover:bg-green-700">Login</Button>
+            </Link>
+          )}
         </div>
       </div>
 

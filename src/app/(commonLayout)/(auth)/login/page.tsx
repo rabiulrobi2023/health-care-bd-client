@@ -8,7 +8,7 @@ const LoginPage = async ({
 }: {
   searchParams?: Promise<{ redirect?: string }>;
 }) => {
-  const redirect = (await searchParams)?.redirect || "";
+  const redirect = (await searchParams)?.redirect;
 
 
   return (
