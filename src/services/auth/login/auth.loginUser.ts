@@ -104,9 +104,8 @@ export const loginUser = async (currentState: any, formData: FormData) => {
     if (typeof verifiedToken === "string") {
       throw new Error("Invalid token");
     }
-    if (redirectTo === null) {
-      redirect(getDefaultDashboard(verifiedToken.role));
-    } else {
+
+    if (redirectTo) {
       const isOwnerAndUserSame = checkLoginUserAndRouteOwnerSame(
         redirectTo as string,
         verifiedToken.user
@@ -117,6 +116,8 @@ export const loginUser = async (currentState: any, formData: FormData) => {
           ? (redirectTo as string)
           : getDefaultDashboard(verifiedToken.role)
       );
+    } else {
+      redirect(getDefaultDashboard(verifiedToken.role));
     }
   } catch (err: any) {
     if (err?.digest?.startsWith("NEXT_REDIRECT")) {

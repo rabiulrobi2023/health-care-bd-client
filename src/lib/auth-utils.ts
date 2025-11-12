@@ -1,4 +1,5 @@
 import { envVariable } from "@/config/envConfig";
+import { RouteOwner } from "@/const/const";
 import { TRouteConfig, TRouteOwner, TUserRole } from "@/types/types";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
@@ -77,10 +78,9 @@ export const checkLoginUserAndRouteOwnerSame = (
   user: TUserRole
 ): boolean => {
   const routeOwner = getRouteOwner(pathname);
-  // if (routeOwner === user) {
-  //   return true;
-  // }
-  // return false;
+  if (routeOwner === RouteOwner.NONE || routeOwner === RouteOwner.COMMON) {
+    return true;
+  }
 
   return routeOwner === user;
 };
