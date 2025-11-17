@@ -20,9 +20,10 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { registerPatient } from "@/services/auth/registerPatient";
 import { LoaderCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerPatient, null);
@@ -34,6 +35,11 @@ export default function RegisterForm() {
       return null;
     }
   };
+  useEffect(() => {
+    if (state && !state.success) {
+      toast.error(state.message || "Failed to registration");
+    }
+  }, [state]);
 
   return (
     <form action={formAction} className="space-y-6 w-full">

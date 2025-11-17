@@ -19,7 +19,7 @@ import logo from "../../assets/images/logo.png";
 
 import { Tokens } from "@/const/const";
 import LogoutButton from "./LogoutButton";
-import { getToken } from "@/lib/token-utils";
+import { getToken } from "@/services/auth/tokenHandler";
 
 const PublicNavbar = async () => {
   const navItems = [

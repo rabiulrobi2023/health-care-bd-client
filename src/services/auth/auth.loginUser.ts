@@ -12,7 +12,7 @@ import {
   getDefaultDashboard,
 } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
-import { setToken, verifyToken } from "@/lib/token-utils";
+import { setToken, verifyToken } from "@/services/auth/tokenHandler";
 
 const loginValidationSchema = z.object({
   email: z
@@ -109,7 +109,7 @@ export const loginUser = async (currentState: any, formData: FormData) => {
     }
 
     if (redirectTo === null) {
-      redirect(getDefaultDashboard(verifiedToken.role));
+      redirect(`${getDefaultDashboard(verifiedToken.role)}/?login=true`);
     } else {
       const isOwnerAndUserSame = checkLoginUserAndRouteOwnerSame(
         redirectTo as string,
@@ -117,9 +117,11 @@ export const loginUser = async (currentState: any, formData: FormData) => {
       );
 
       redirect(
-        isOwnerAndUserSame
-          ? (redirectTo as string)
-          : getDefaultDashboard(verifiedToken.role)
+        `${
+          isOwnerAndUserSame
+            ? (redirectTo as string)
+            : getDefaultDashboard(verifiedToken.role)
+        }/?login=true`
       );
     }
   } catch (err: any) {

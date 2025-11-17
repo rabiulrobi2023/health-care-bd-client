@@ -9,7 +9,11 @@ import {
 } from "./lib/auth-utils";
 
 import { envVariable } from "./config/envConfig";
-import { deleteToken, getToken, verifyToken } from "./lib/token-utils";
+import {
+  deleteToken,
+  getToken,
+  verifyToken,
+} from "./services/auth/tokenHandler";
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -19,11 +23,11 @@ export async function proxy(request: NextRequest) {
 
   if (accessToken) {
     try {
-      const verifiedToken =await verifyToken(
+      const verifiedToken = (await verifyToken(
         accessToken,
         envVariable.JWT_ACCESS_SECRET as string
-      ) as JwtPayload;
-   
+      )) as JwtPayload;
+
       userRole = verifiedToken.role as TUserRole;
     } catch {
       const response = NextResponse.redirect(new URL("/login", request.url));

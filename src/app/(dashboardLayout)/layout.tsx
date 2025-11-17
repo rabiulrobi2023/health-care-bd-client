@@ -1,13 +1,18 @@
-import LogoutButton from "@/components/shared/LogoutButton";
+import DashboardNavbar from "@/components/modules/dashboard/dashboardNavbar/DashboardNavbar";
+import DashboarSidebar from "@/components/modules/dashboard/dashboardSidebar/DashboardSidebar";
+
 import React from "react";
 
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
-      <LogoutButton></LogoutButton>
-      {children}
+    <div className="flex h-screen">
+      <DashboarSidebar />
+      <div className="flex flex-col w-screen">
+        <DashboardNavbar />
+        <main className="p-4">{children}</main>
+      </div>
     </div>
   );
 };
 
-export default AdminLayout;
+export default DashboardLayout;

@@ -26,4 +26,6 @@ export const NextEnv = {
   PRODUCTION: "PRODUCTION",
 } as const;
 
-
+export const adminBaseRoute = "/admin/dashboard";
+export const doctorBaseRoute = "/doctor/dashboard";
+export const patientBaseRotue = "/patient";

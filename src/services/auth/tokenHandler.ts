@@ -37,6 +37,8 @@ export const verifyToken = async(token: string, secret: string) => {
   return verifiedToken;
 };
 
+
+
 export const deleteToken = async (tokenName: string) => {
   const cookieSotre = cookies();
   (await cookieSotre).delete(tokenName);

@@ -4,7 +4,7 @@ import { TRouteConfig, TRouteOwner, TUserRole } from "@/types/types";
 const authRoutes = ["/login", "/register"];
 
 const commonProtectedRoutes: TRouteConfig = {
-  exact: ["/my-profile", "/settings", "/forgot-password", "/reset-password"],
+  exact: ["/my-profile", "/settings", "/forgot-password", "/reset-password","/change-password"],
   patterns: [], //[/password/change-password,]
 };
 
