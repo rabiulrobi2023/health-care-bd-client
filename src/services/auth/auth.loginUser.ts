@@ -13,6 +13,7 @@ import {
 } from "@/lib/auth-utils";
 import { redirect } from "next/navigation";
 import { setToken, verifyToken } from "@/services/auth/tokenHandler";
+import { serverFetch } from "@/lib/serverFetch";
 
 const loginValidationSchema = z.object({
   email: z
@@ -48,8 +49,7 @@ export const loginUser = async (currentState: any, formData: FormData) => {
       };
     }
 
-    const res: Response = await fetch(`${envVariable.baseApi}/auth/login`, {
-      method: "POST",
+    const res: Response = await serverFetch.post("/auth/login", {
       body: JSON.stringify(loginData),
       headers: {
         "Content-Type": "application/json",

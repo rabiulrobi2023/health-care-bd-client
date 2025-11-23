@@ -6,11 +6,11 @@ import { toast } from "sonner";
 const LoginSuccessToast = () => {
   const serarchParams = useSearchParams();
   const router = useRouter();
+  console.log(serarchParams, router)
 
   useEffect(() => {
     if (serarchParams.get("login") === "true") {
-      toast.success("Login successfully",{duration:1000});
-
+      toast.success("Login successfully", { duration: 1000 });
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete("login");
       router.replace(newUrl.toString());
