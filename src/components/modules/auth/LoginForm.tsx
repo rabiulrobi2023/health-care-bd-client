@@ -8,34 +8,21 @@ import Password from "@/components/ui/password";
 
 import { useActionState, useEffect } from "react";
 
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { LoaderCircle } from "lucide-react";
-import { loginUser } from "@/services/auth/auth.loginUser";
+import { loginUser } from "@/services/auth/loginUser";
 import { toast } from "sonner";
+import InputFieldErrorMessage from "@/components/shared/InputFieldErrorMessage";
 
 export default function LoginForm({ redirect }: { redirect?: string }) {
   const [state, formAction, isPending] = useActionState(loginUser, null);
 
   useEffect(() => {
     if (state && !state.success && state.message) {
-      toast.error(state.message);
+      toast.error(state.message || "Failed to login");
     }
   }, [state]);
 
-  const getFiedError = (fieldName: string) => {
-    if (state && state.errors) {
-      const error = state.errors.find((err: any) => err.field === fieldName);
-
-      return error?.message;
-    } else {
-      return null;
-    }
-  };
   return (
     <form action={formAction} className="w-full">
       {redirect && (
@@ -50,20 +37,12 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
             placeholder="example@mail.com"
             defaultValue={"admin1@gmail.com"}
           />
-          {getFiedError("email") && (
-            <FieldDescription className="text-red-600">
-              {getFiedError("email")}
-            </FieldDescription>
-          )}
+          <InputFieldErrorMessage field="email" state={state} />
         </Field>
         <Field>
           <FieldLabel htmlFor="password">Password</FieldLabel>
           <Password name="password" defaultValue={"111111"} />
-          {getFiedError("password") && (
-            <FieldDescription className="text-red-600">
-              {getFiedError("password")}
-            </FieldDescription>
-          )}
+          <InputFieldErrorMessage field="password" state={state} />
         </Field>
 
         <Button

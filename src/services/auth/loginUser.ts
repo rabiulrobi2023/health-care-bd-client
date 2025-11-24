@@ -14,43 +14,29 @@ import {
 import { redirect } from "next/navigation";
 import { setToken, verifyToken } from "@/services/auth/tokenHandler";
 import { serverFetch } from "@/lib/serverFetch";
+import { validationRequest } from "@/lib/validationRequest";
+import { loginValidationSchema } from "@/zod/auth.validation";
 
-const loginValidationSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .nonempty({ message: "Email is required" })
-    .email({ message: "Invalid email address" }),
-  password: z
-    .string()
-    .nonempty("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-});
 
-export const loginUser = async (currentState: any, formData: FormData) => {
+
+export const loginUser = async (
+  _currentState: any,
+  formData: FormData
+): Promise<any> => {
   try {
-    const loginData = {
+    const payload = {
       email: formData.get("email"),
       password: formData.get("password"),
     };
-
-    const redirectTo = formData.get("redirect");
-
-    const validatedFields = loginValidationSchema.safeParse(loginData);
-    if (!validatedFields.success) {
-      return {
-        success: false,
-        errors: validatedFields.error.issues.map((issue) => {
-          return {
-            field: issue.path[0],
-            message: issue.message,
-          };
-        }),
-      };
+    const redirectTo = formData?.get("redirect");
+    const isValidatePayload = validationRequest(payload, loginValidationSchema);
+    if (!isValidatePayload.success) {
+      return isValidatePayload;
     }
 
-    const res: Response = await serverFetch.post("/auth/login", {
-      body: JSON.stringify(loginData),
+    const validatedPayload: any = isValidatePayload.data;
+    const res = await serverFetch.post("/auth/login", {
+      body: JSON.stringify(validatedPayload),
       headers: {
         "Content-Type": "application/json",
       },
@@ -130,7 +116,7 @@ export const loginUser = async (currentState: any, formData: FormData) => {
     }
     return {
       success: false,
-      message: err.message,
+      message: err.message || "Login fail",
     };
   }
 };

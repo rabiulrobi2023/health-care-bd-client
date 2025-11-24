@@ -24,6 +24,7 @@ import { useActionState, useEffect } from "react";
 import { registerPatient } from "@/services/auth/registerPatient";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
+import InputFieldErrorMessage from "@/components/shared/InputFieldErrorMessage";
 
 export default function RegisterForm() {
   const [state, formAction, isPending] = useActionState(registerPatient, null);
@@ -75,11 +76,7 @@ export default function RegisterForm() {
                 name="contactNumber"
                 placeholder="01750749762"
               />
-              {getFiedError("contactNumber") && (
-                <FieldDescription className="text-red-600">
-                  {getFiedError("contactNumber")}
-                </FieldDescription>
-              )}
+              <InputFieldErrorMessage field="contactNumber" state={state} />
             </Field>
 
             <Field>
@@ -99,11 +96,7 @@ export default function RegisterForm() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {getFiedError("gender") && (
-                <FieldDescription className="text-red-600">
-                  {getFiedError("gender")}
-                </FieldDescription>
-              )}
+              <InputFieldErrorMessage field="gender" state={state} />
             </Field>
           </div>
         </div>
@@ -120,20 +113,12 @@ export default function RegisterForm() {
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="password">Password</FieldLabel>
             <Password name="password" />
-            {getFiedError("password") && (
-              <FieldDescription className="text-red-600">
-                {getFiedError("password")}
-              </FieldDescription>
-            )}
+            <InputFieldErrorMessage field="password" state={state} />
           </Field>
           <Field className="lg:w-1/2">
             <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
             <Password name="confirmPassword" />
-            {getFiedError("confirmPassword") && (
-              <FieldDescription className="text-red-600">
-                {getFiedError("confirmPassword")}
-              </FieldDescription>
-            )}
+            <InputFieldErrorMessage field="confirmPassword" state={state} />
           </Field>
         </div>
       </FieldGroup>

@@ -6,7 +6,6 @@ import { toast } from "sonner";
 const LoginSuccessToast = () => {
   const serarchParams = useSearchParams();
   const router = useRouter();
-  console.log(serarchParams, router)
 
   useEffect(() => {
     if (serarchParams.get("login") === "true") {

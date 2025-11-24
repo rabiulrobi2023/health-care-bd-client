@@ -15,7 +15,7 @@ const serverFetchHelper = async (
 };
 
 export const serverFetch = {
-  get: async (endpoint: string, options: RequestInit): Promise<Response> =>
+  get: async (endpoint: string, options?: RequestInit): Promise<Response> =>
     serverFetchHelper(endpoint, { ...options, method: "GET" }),
 
   post: async (endpoint: string, options: RequestInit): Promise<Response> =>
@@ -27,6 +27,6 @@ export const serverFetch = {
   patch: async (endpoint: string, options: RequestInit): Promise<Response> =>
     serverFetchHelper(endpoint, { ...options, method: "PATCH" }),
 
-  delete: async (endpoint: string, options: RequestInit): Promise<Response> =>
+  delete: async (endpoint: string, options?: RequestInit): Promise<Response> =>
     serverFetchHelper(endpoint, { ...options, method: "DELETE" }),
 };
