@@ -14,7 +14,7 @@ export interface TDoctor {
   experience: number;
   currentWorkingPlace: string;
   designation: string;
-  appontmentFee: number;
+  appointmentFee: number;
   rating?: number;
   createdAt?: string;
   updatedAt?: string;

@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils";
 type TRefreshButtonProps = {
   size?: "default" | "sm" | "lg";
   vairent?: "default" | "outline" | "ghost";
-  className: string;
-  showLabel: boolean;
+  className?: string;
+  showLabel?: boolean;
 };
 
 const RefreshButton = ({

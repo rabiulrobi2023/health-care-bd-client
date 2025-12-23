@@ -7,6 +7,7 @@ const Searchbar = () => {
     <div className="*:not-first:mt-2 bg-w ">
       <div className="relative">
         <Input
+        
           className="peer ps-9 pe-9 bg-white"
           placeholder="Search..."
           type="search"

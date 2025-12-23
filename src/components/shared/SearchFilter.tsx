@@ -1,3 +1,4 @@
+"use client";
 import useDebounce from "@/hooks/useDebounce";
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -38,13 +39,14 @@ const SearchFilter = ({
   }, [debouncedValue, paramName, router, searchParams]);
 
   return (
-    <div>
-      <Search className="" />
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2" />
       <Input
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         disabled={isPending}
+        className="pl-10"
       />
     </div>
   );

@@ -10,7 +10,7 @@ type TCreateSpecialties = {
   title: string;
 };
 
-export async function createSpecialties(_preState: any, formData: FormData) {
+const createSpecialties = async (_preState: any, formData: FormData) => {
   try {
     const payload: TCreateSpecialties = {
       title: formData.get("title") as string,
@@ -49,9 +49,9 @@ export async function createSpecialties(_preState: any, formData: FormData) {
       }`,
     };
   }
-}
+};
 
-export async function getAllSpecialties() {
+const getAllSpecialties = async () => {
   try {
     const res = await serverFetch.get("/specialties");
     const result = await res.json();
@@ -67,7 +67,7 @@ export async function getAllSpecialties() {
       }`,
     };
   }
-}
+};
 
 export async function deleteSpecialty(id: string) {
   try {
@@ -88,3 +88,8 @@ export async function deleteSpecialty(id: string) {
     };
   }
 }
+
+export const specialtiesService = {
+  createSpecialties,
+  getAllSpecialties,
+};

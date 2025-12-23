@@ -1,3 +1,4 @@
+"use client";
 import { TDoctor } from "@/interface/doctor.interface";
 import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
 import { useActionState, useEffect, useState } from "react";
@@ -21,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 interface IDoctorFormDialogProps {
   open: boolean;
@@ -50,16 +52,18 @@ const DoctorFormDialog = ({
   );
 
   useEffect(() => {
-    if (state.onSuccess) {
+    if (state?.success) {
       toast.success(state.message);
       onSuccess();
       onClose();
+    } else if (state && !state.success) {
+      toast.error(state.message);
     }
   }, [state, onSuccess, onClose]);
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={onClose}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
@@ -141,6 +145,145 @@ const DoctorFormDialog = ({
               />
               <InputFieldErrorMessage field="address" state={state} />
             </Field>
+
+            <Field>
+              <FieldLabel htmlFor="registrationNumber">
+                Registration Number
+              </FieldLabel>
+              <Input
+                id="registrationNumber"
+                name="registrationNumber"
+                placeholder="REG123456"
+                defaultValue={isUpdate ? doctor?.registrationNumber : undefined}
+              />
+              <InputFieldErrorMessage
+                state={state}
+                field="registrationNumber"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="experience">
+                Experience (in years)
+              </FieldLabel>
+              <Input
+                id="experience"
+                name="experience"
+                type="number"
+                placeholder="5"
+                defaultValue={isUpdate ? doctor?.experience : undefined}
+                min="0"
+              />
+              <InputFieldErrorMessage state={state} field="experience" />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="gender">Gender</FieldLabel>
+              <Input
+                id=""
+                name="gender"
+                type="hidden"
+                placeholder="Select Geender"
+                defaultValue={isUpdate ? doctor.gender : Gender.MALE}
+              />
+              <Select
+                value={gender}
+                onValueChange={(value) => setGender(value as TGender)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(Gender).map((item) => (
+                    <SelectItem value={item} key={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <InputFieldErrorMessage field="gender" state={state} />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="appointmentFee">Appointment Fee</FieldLabel>
+              <Input
+                id="appointmentFee"
+                name="appointmentFee"
+                type="number"
+                placeholder="100"
+                defaultValue={isUpdate ? doctor?.appointmentFee : undefined}
+                min="0"
+              />
+              <InputFieldErrorMessage state={state} field="appointmentFee" />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="qualification">Qualification</FieldLabel>
+              <Input
+                id="qualification"
+                name="qualification"
+                placeholder="MBBS, MD"
+                defaultValue={isUpdate ? doctor?.qualification : undefined}
+              />
+              <InputFieldErrorMessage state={state} field="qualification" />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="currentWorkingPlace">
+                Current Working Place
+              </FieldLabel>
+              <Input
+                id="currentWorkingPlace"
+                name="currentWorkingPlace"
+                placeholder="City Hospital"
+                defaultValue={
+                  isUpdate ? doctor?.currentWorkingPlace : undefined
+                }
+              />
+              <InputFieldErrorMessage
+                state={state}
+                field="currentWorkingPlace"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="designation">Designation</FieldLabel>
+              <Input
+                id="designation"
+                name="designation"
+                placeholder="Senior Consultant"
+                defaultValue={isUpdate ? doctor?.designation : undefined}
+              />
+              <InputFieldErrorMessage state={state} field="designation" />
+            </Field>
+
+            {isUpdate && (
+              <Field>
+                <FieldLabel htmlFor="profilePhoto">Profile Photo</FieldLabel>
+                <Input
+                  id="profilePhoto"
+                  name="profilePhoto"
+                  type="file"
+                  accept="image/*"
+                />
+                <InputFieldErrorMessage state={state} field="profilePhoto" />
+              </Field>
+            )}
+
+            <div className=" flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+
+              <Button type="submit" disabled={pending}>
+                {pending ? "Saving..." : isUpdate ? "Update" : "Create"}
+              </Button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

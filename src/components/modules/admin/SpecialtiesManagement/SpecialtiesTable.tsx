@@ -6,9 +6,11 @@ import ManagementTable from "@/components/shared/ManagementTable";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { TSpecialty } from "./specialty.interface";
+
 import { deleteSpecialty } from "@/services/admin/specialtiesManagement";
+import { TSpecialty } from "./specialty.interface";
 import { SpecialtiesColumns } from "./SpecialtiesColumns";
+
 
 interface SpecialityTableProps {
   specialities: TSpecialty[];

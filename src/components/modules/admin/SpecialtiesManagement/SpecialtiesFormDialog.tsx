@@ -10,8 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { specialtiesService } from "@/services/admin/specialtiesManagement";
 
-import { createSpecialties } from "@/services/admin/specialtiesManagement";
 import { useActionState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
@@ -27,7 +27,10 @@ const SpecialtiesFormDialog = ({
   onSuccess,
 }: TSpecialtiesFormDialogProps) => {
   const hasHandledRef = useRef(false);
-  const [state, formAction, pending] = useActionState(createSpecialties, null);
+  const [state, formAction, pending] = useActionState(
+    specialtiesService.createSpecialties,
+    null
+  );
   console.log(state);
 
   useEffect(() => {

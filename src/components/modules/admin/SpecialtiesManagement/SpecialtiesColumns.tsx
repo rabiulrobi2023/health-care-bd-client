@@ -1,6 +1,7 @@
 import { TColumn } from "@/components/shared/ManagementTable";
-import { TSpecialty } from "./specialty.interface";
+
 import Image from "next/image";
+import { TSpecialty } from "./specialty.interface";
 
 export const SpecialtiesColumns: TColumn<TSpecialty>[] = [
   {

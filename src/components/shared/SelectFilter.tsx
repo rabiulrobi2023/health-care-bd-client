@@ -45,11 +45,10 @@ const SelectFilter = ({
   return (
     <Select onValueChange={handleChange} disabled={isPending}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={placeHolder} />
+        <SelectValue placeholder={placeHolder}/>
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          <SelectLabel>Fruits</SelectLabel>
           <SelectItem value="all">All</SelectItem>
           {options.map((option) => (
             <SelectItem value={option.value} key={option.value}>
