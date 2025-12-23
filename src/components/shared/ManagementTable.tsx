@@ -17,7 +17,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 
-type TColumn<T> = {
+export type TColumn<T> = {
   header: string;
   accessor: keyof T | ((row: T) => React.ReactNode);
   className?: string;
@@ -47,7 +47,7 @@ export default function ManagementTable<T>({
   const hasAction = onView || onEdit || onDelete;
   return (
     <>
-      <div className="rounded-lg border relative">
+      <div className="rounded-sm border relative">
         {/* Refreshing Overlay */}
         {isRefreshing && (
           <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-lg">
@@ -60,17 +60,24 @@ export default function ManagementTable<T>({
 
         <Table>
           <TableHeader>
-            <TableRow>
-              {columns.map((column, colIndex) => (
-                <TableHead key={colIndex} className={column.className}>
+            <TableRow className="flex justify-between hover:bg-green-100 bg-green-100">
+              {columns?.map((column, colIndex) => (
+                <TableHead
+                  key={colIndex}
+                  className={`${column.className} flex items-center font-bold`}
+                >
                   {column.header}
                 </TableHead>
               ))}
-              {hasAction && <TableHead>Actions</TableHead>}
+              {hasAction && (
+                <TableHead className="flex items-center font-bold">
+                  Actions
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {data?.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (hasAction ? 1 : 0)}
@@ -81,9 +88,12 @@ export default function ManagementTable<T>({
               </TableRow>
             ) : (
               data.map((item, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {columns.map((col, colId) => (
-                    <TableCell key={colId}>
+                <TableRow key={rowIndex} className="flex justify-between">
+                  {columns?.map((col, colId) => (
+                    <TableCell
+                      key={colId}
+                      className="capitalize flex items-center"
+                    >
                       {typeof col.accessor === "function"
                         ? col.accessor(item)
                         : String(item[col.accessor])}

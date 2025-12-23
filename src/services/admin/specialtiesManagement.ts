@@ -34,6 +34,7 @@ export async function createSpecialties(_preState: any, formData: FormData) {
     }
     const res = await serverFetch.post("/specialties", {
       body: newFormData,
+      credentials: "include",
     });
     const result = await res.json();
     return result;
@@ -43,7 +44,7 @@ export async function createSpecialties(_preState: any, formData: FormData) {
       success: false,
       message: `${
         envVariable.NEXT_ENV === NextEnv.DEVELOPMENT
-          ? error.messge
+          ? error.message
           : "Something went wrong"
       }`,
     };
@@ -68,9 +69,11 @@ export async function getAllSpecialties() {
   }
 }
 
-export async function deleteSpecialtis(id: string) {
+export async function deleteSpecialty(id: string) {
   try {
-    const res = await serverFetch.delete(`/specialties/${id}`);
+    const res = await serverFetch.delete(`/specialties/${id}`, {
+      credentials: "include",
+    });
     const result = await res.json();
     return result;
   } catch (error: any) {
@@ -79,7 +82,7 @@ export async function deleteSpecialtis(id: string) {
       success: false,
       message: `${
         envVariable.NEXT_ENV === NextEnv.DEVELOPMENT
-          ? error.messge
+          ? error.message
           : "Something went wrong"
       }`,
     };

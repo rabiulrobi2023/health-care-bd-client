@@ -7,6 +7,7 @@ const serverFetchHelper = async (
   const { headers, ...restOptions } = options;
   const response = await fetch(`${envVariable.baseApi}${endpoint}`, {
     ...restOptions,
+    
     headers: {
       ...headers,
     },
