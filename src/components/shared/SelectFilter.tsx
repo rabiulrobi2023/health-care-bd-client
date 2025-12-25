@@ -38,14 +38,14 @@ const SelectFilter = ({
     }
 
     startTransition(() => {
-      router.push(`${params.toString()}`);
+      router.push(`?${params.toString()}`);
     });
   };
 
   return (
     <Select onValueChange={handleChange} disabled={isPending}>
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={placeHolder}/>
+        <SelectValue placeholder={placeHolder} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

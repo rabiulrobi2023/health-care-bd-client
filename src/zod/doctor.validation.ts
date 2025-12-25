@@ -1,8 +1,7 @@
 import { Gender } from "@/const/const";
-import z, { keyof } from "zod";
+import z from "zod";
 
 export const createDoctorZodSchema = z.object({
-  password: z.string().min(6, "Password must be at least 6 characters long"),
   name: z.string().min(3, "Name must be at least 3 characters long"),
   email: z.email("Invalid email address"),
   contactNumber: z
@@ -19,7 +18,7 @@ export const createDoctorZodSchema = z.object({
     Object.keys(Gender),
     "Gender must be either 'MALE' or 'FEMALE' or 'OTHERS'"
   ),
-  appointmentFee: z.number().min(0, "Appointment Fee cannot be negative"),
+  appoinmentFee: z.number().min(0, "Appointment Fee cannot be negative"),
   qualification: z
     .string()
     .min(3, "Qualification must be at least 3 characters long"),
@@ -48,7 +47,7 @@ export const updateDoctorZodSchema = z.object({
   gender: z
     .enum(Object.keys(Gender), "Gender must be either 'MALE' or 'FEMALE'")
     .optional(),
-  appointmentFee: z
+  appoinmentFee: z
     .number()
     .min(0, "Appointment Fee cannot be negative")
     .optional(),

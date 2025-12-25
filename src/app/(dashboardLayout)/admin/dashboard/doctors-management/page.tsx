@@ -1,20 +1,34 @@
 import DoctorManagementHeader from "@/components/modules/admin/DoctorManagement/DoctorManagementHeader";
+import DoctorManagementTable from "@/components/modules/admin/DoctorManagement/DoctorManagementTable";
 import { TSpecialty } from "@/components/modules/admin/SpecialtiesManagement/specialty.interface";
 import RefreshButton from "@/components/shared/RefreshButton";
 import SearchFilter from "@/components/shared/SearchFilter";
 import SelectFilter from "@/components/shared/SelectFilter";
 import TableSkeleton from "@/components/shared/TableSkeleton";
+import { Gender } from "@/const/const";
+import { getQueryString } from "@/lib/formatters";
+import { doctorService } from "@/services/admin/doctorManagement";
 
 import { specialtiesService } from "@/services/admin/specialtiesManagement";
+
 import { Suspense } from "react";
 
-const DcoctorManagementPage = async () => {
+const DcoctorManagementPage = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) => {
+  const queryObj = await searchParams;
+  const queryString = getQueryString(queryObj);
+  console.log(queryString);
+  const doctor = await doctorService.getAllDoctros(queryString);
+
   const specialtes = await specialtiesService.getAllSpecialties();
 
   return (
-    <div>
+    <div className="flex flex-col gap-6">
       <div>
-        <DoctorManagementHeader specialties={specialtes} />
+        <DoctorManagementHeader specialties={specialtes.data} />
         <div className="flex space-x-4 mt-5">
           <SearchFilter paramName="searchTerm" placeholder="Search doctor..." />
           <SelectFilter
@@ -25,10 +39,20 @@ const DcoctorManagementPage = async () => {
               value: specialty.title,
             }))}
           />
+          <SelectFilter
+            paramName="gender"
+            placeHolder="Select Gender"
+            options={Object.keys(Gender)?.map((gen) => ({
+              label: gen,
+              value: gen,
+            }))}
+          />
           <RefreshButton showLabel={true} />
         </div>
       </div>
-      <Suspense fallback={<TableSkeleton columns={10} rows={10} />} />
+      <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
+        <DoctorManagementTable doctor={doctor?.data?.data} />
+      </Suspense>
     </div>
   );
 };

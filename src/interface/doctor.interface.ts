@@ -4,7 +4,6 @@ export interface TDoctor {
   id?: string;
   email: string;
   name: string;
-  password: string;
   contactNumber: string;
   address?: string;
   gender: TGender;
@@ -14,15 +13,14 @@ export interface TDoctor {
   experience: number;
   currentWorkingPlace: string;
   designation: string;
-  appointmentFee: number;
+  appoinmentFee: number;
   rating?: number;
   createdAt?: string;
   updatedAt?: string;
   doctorSpecialtes?: Array<{
-    specialties?: {
-      id: string;
-      titile: string;
-      icon?: string;
-    };
+    id: string;
+    titile: string;
+    icon?: string;
   }>;
+  isDeleted?: boolean;
 }

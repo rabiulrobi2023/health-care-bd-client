@@ -15,51 +15,53 @@ const createDoctor = async (_preState: any, formData: FormData) => {
   try {
     const payload: TDoctor = {
       name: formData.get("name") as string,
-      password: formData.get("password") as string,
       email: formData.get("email") as string,
-      contactNumber: formData.get("constactNumber") as string,
+      contactNumber: formData.get("contactNumber") as string,
       address: formData.get("address") as string,
       registrationNumber: formData.get("registrationNumber") as string,
-      experience: Number(formData.get("expreience") as string),
+      experience: Number(formData.get("expreience")) as number,
       gender: formData.get("gender") as TGender,
-      appointmentFee: Number(formData.get("appointmentFee")) as number,
+      appoinmentFee: Number(formData.get("appoinmentFee")) as number,
       qualification: formData.get("qualification") as string,
       currentWorkingPlace: formData.get("currentWorkingPlace") as string,
       designation: formData.get("designation") as string,
     };
 
+    console.log("payload", payload);
+
     const isValidatedPayload = validationRequest(
       payload,
       createDoctorZodSchema
-    ).data;
-    if (!isValidatedPayload) {
+    );
+
+    console.log(isValidatedPayload);
+    if (!isValidatedPayload.success) {
       return isValidatedPayload;
     }
 
-    const validatedPaload = {
-      password: isValidatedPayload.password,
-      doctor: {
-        name: isValidatedPayload.name,
-        email: isValidatedPayload.email,
-        contactNumber: isValidatedPayload.contactNumber,
-        address: isValidatedPayload.address,
-        registrationNumber: isValidatedPayload.registrationNumber,
-        experience: isValidatedPayload.experience,
-        gender: isValidatedPayload.gender,
-        appointmentFee: isValidatedPayload.appointmentFee,
-        qualification: isValidatedPayload.qualification,
-        currentWorkingPlace: isValidatedPayload.currentWorkingPlace,
-        designation: isValidatedPayload.designation,
-      },
+    const validatedPayload: any = isValidatedPayload.data;
+
+    const doctorData = {
+      name: validatedPayload.name,
+      email: validatedPayload.email,
+      contactNumber: validatedPayload.contactNumber,
+      address: validatedPayload.address,
+      registrationNumber: validatedPayload.registrationNumber,
+      experience: validatedPayload.experience,
+      gender: validatedPayload.gender,
+      appoinmentFee: validatedPayload.appoinmentFee,
+      qualification: validatedPayload.qualification,
+      currentWorkingPlace: validatedPayload.currentWorkingPlace,
+      designation: validatedPayload.designation,
     };
     const newFormData = new FormData();
-    newFormData.append("data", JSON.stringify(validatedPaload));
+    newFormData.append("data", JSON.stringify(doctorData));
 
     if (formData.get("file")) {
       newFormData.append("file", formData.get("file") as Blob);
     }
 
-    const res = await serverFetch.post("doctor/create", {
+    const res = await serverFetch.post("/doctor/create", {
       body: newFormData,
       credentials: "include",
     });
@@ -78,10 +80,10 @@ const createDoctor = async (_preState: any, formData: FormData) => {
   }
 };
 
-const getAllDoctros = async (quaryString: string) => {
+const getAllDoctros = async (queryString: string) => {
   try {
     const res = await serverFetch.get(
-      `/doctor${quaryString ? `${quaryString}` : ""}`
+      `/doctor${`${queryString ? `?${queryString}` : ""}`}`
     );
     const result = await res.json();
     return result;
@@ -122,7 +124,7 @@ const updateDoctor = async (
       registrationNumber: formData.get("registrationNumber") as string,
       experience: Number(formData.get("experience") as string),
       gender: formData.get("gender") as "MALE" | "FEMALE",
-      appointmentFee: Number(formData.get("appointmentFee") as string),
+      appoinmentFee: Number(formData.get("appointmentFee") as string),
       qualification: formData.get("qualification") as string,
       currentWorkingPlace: formData.get("currentWorkingPlace") as string,
       designation: formData.get("designation") as string,
@@ -173,7 +175,9 @@ const softDeleteDoctor = async (id: string) => {
 
 const deleteDoctor = async (id: string) => {
   try {
-    const res = await serverFetch.delete(`/doctor/${id}`);
+    const res = await serverFetch.delete(`/doctor/${id}`, {
+      credentials: "include",
+    });
     const result = res.json();
     return result;
   } catch (error) {

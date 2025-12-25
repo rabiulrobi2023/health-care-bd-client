@@ -1,4 +1,5 @@
 "use client";
+import InputFieldErrorMessage from "@/components/shared/InputFieldErrorMessage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,7 +32,7 @@ const SpecialtiesFormDialog = ({
     specialtiesService.createSpecialties,
     null
   );
-  console.log(state);
+
 
   useEffect(() => {
     if (!state) return;
@@ -59,11 +60,7 @@ const SpecialtiesFormDialog = ({
           <Field>
             <FieldLabel htmlFor="title">Title</FieldLabel>
             <Input type="text" name="title" placeholder="Cardiology" />
-            {/* {getFiedError("name") && (
-                <FieldDescription className="text-red-600">
-                  {getFiedError("name")}
-                </FieldDescription>
-              )} */}
+            <InputFieldErrorMessage field="title" state={state} />
           </Field>
           <Field>
             <FieldLabel htmlFor="file">Upload Icon</FieldLabel>
@@ -73,11 +70,6 @@ const SpecialtiesFormDialog = ({
               placeholder="Cardiology"
               accept="image/*"
             />
-            {/* {getFiedError("name") && (
-                <FieldDescription className="text-red-600">
-                  {getFiedError("name")}
-                </FieldDescription>
-              )} */}
           </Field>
           <DialogFooter>
             <DialogClose asChild>

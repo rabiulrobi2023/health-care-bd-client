@@ -1,7 +1,7 @@
 "use client";
 import { TDoctor } from "@/interface/doctor.interface";
 import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { TGender } from "@/interface/share.interface";
 import { Gender } from "@/const/const";
 import { doctorService } from "@/services/admin/doctorManagement";
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import InputFieldErrorMessage from "@/components/shared/InputFieldErrorMessage";
 import {
@@ -50,27 +50,31 @@ const DoctorFormDialog = ({
       : doctorService.createDoctor,
     null
   );
+  const hasHandledRef = useRef(false);
 
   useEffect(() => {
-    if (state?.success) {
+    if (!state) return;
+    if (state?.success && !hasHandledRef.current) {
+      hasHandledRef.current = true;
       toast.success(state.message);
       onSuccess();
       onClose();
-    } else if (state && !state.success) {
+    } else if (!state?.success && !hasHandledRef.current) {
+      hasHandledRef.current = true;
       toast.error(state.message);
     }
   }, [state, onSuccess, onClose]);
 
   return (
-    <div>
-      <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {isUpdate ? "Edit Doctor" : "Create a New Doctor"}
-            </DialogTitle>
-          </DialogHeader>
-          <form action={formAction}>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-h-[90vh] overflow-y-scroll">
+        <DialogHeader>
+          <DialogTitle className="font-bold text-3xl text-center">
+            {isUpdate ? "Edit Doctor" : "Create a New Doctor"}
+          </DialogTitle>
+        </DialogHeader>
+        <form action={formAction} className="flex flex-col gap-5">
+          <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
               <Input
@@ -205,16 +209,16 @@ const DoctorFormDialog = ({
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="appointmentFee">Appointment Fee</FieldLabel>
+              <FieldLabel htmlFor="appoinmentFee">Appointment Fee</FieldLabel>
               <Input
-                id="appointmentFee"
-                name="appointmentFee"
+                id="appoinmentFee"
+                name="appoinmentFee"
                 type="number"
                 placeholder="100"
-                defaultValue={isUpdate ? doctor?.appointmentFee : undefined}
+                defaultValue={isUpdate ? doctor?.appoinmentFee : undefined}
                 min="0"
               />
-              <InputFieldErrorMessage state={state} field="appointmentFee" />
+              <InputFieldErrorMessage state={state} field="appoinmentFee" />
             </Field>
 
             <Field>
@@ -284,10 +288,10 @@ const DoctorFormDialog = ({
                 {pending ? "Saving..." : isUpdate ? "Update" : "Create"}
               </Button>
             </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </div>
+          </FieldGroup>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

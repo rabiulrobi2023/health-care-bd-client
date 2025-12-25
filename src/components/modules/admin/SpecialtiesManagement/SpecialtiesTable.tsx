@@ -11,7 +11,6 @@ import { deleteSpecialty } from "@/services/admin/specialtiesManagement";
 import { TSpecialty } from "./specialty.interface";
 import { SpecialtiesColumns } from "./SpecialtiesColumns";
 
-
 interface SpecialityTableProps {
   specialities: TSpecialty[];
 }
@@ -43,7 +42,7 @@ const SpecialitiesTable = ({ specialities }: SpecialityTableProps) => {
 
     setIsDeleting(true);
     const result = await deleteSpecialty(toDelete.id);
-    console.log(toDelete, result)
+
     setIsDeleting(false);
 
     if (result.success) {

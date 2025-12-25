@@ -2,7 +2,7 @@
 "use server";
 
 import { envVariable } from "@/config/envConfig";
-import z from "zod";
+
 import { parse } from "cookie";
 import { Tokens } from "@/const/const";
 
@@ -16,8 +16,6 @@ import { setToken, verifyToken } from "@/services/auth/tokenHandler";
 import { serverFetch } from "@/lib/serverFetch";
 import { validationRequest } from "@/lib/validationRequest";
 import { loginValidationSchema } from "@/zod/auth.validation";
-
-
 
 export const loginUser = async (
   _currentState: any,

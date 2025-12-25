@@ -14,7 +14,7 @@ export const SpecialtiesColumns: TColumn<TSpecialty>[] = [
         height={40}
       />
     ),
-  },
+  }, 
   {
     header: "Title",
     accessor: (specialty) => specialty.title,
