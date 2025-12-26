@@ -4,6 +4,7 @@ import { TSpecialty } from "@/components/modules/admin/SpecialtiesManagement/spe
 import RefreshButton from "@/components/shared/RefreshButton";
 import SearchFilter from "@/components/shared/SearchFilter";
 import SelectFilter from "@/components/shared/SelectFilter";
+import TablePagination from "@/components/shared/TablePagination";
 import TableSkeleton from "@/components/shared/TableSkeleton";
 import { Gender } from "@/const/const";
 import { getQueryString } from "@/lib/formatters";
@@ -20,8 +21,13 @@ const DcoctorManagementPage = async ({
 }) => {
   const queryObj = await searchParams;
   const queryString = getQueryString(queryObj);
-  console.log(queryString);
+
   const doctor = await doctorService.getAllDoctros(queryString);
+  const metaData = {
+    currentPage: doctor.data.meta.page,
+    totalPage: doctor.data.meta.totalPage,
+    maxPage: 5,
+  };
 
   const specialtes = await specialtiesService.getAllSpecialties();
 
@@ -52,6 +58,11 @@ const DcoctorManagementPage = async ({
       </div>
       <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
         <DoctorManagementTable doctor={doctor?.data?.data} />
+        <TablePagination
+          currentPage={metaData.currentPage}
+          totalpage={metaData.totalPage}
+          maxPage={metaData.maxPage}
+        />
       </Suspense>
     </div>
   );

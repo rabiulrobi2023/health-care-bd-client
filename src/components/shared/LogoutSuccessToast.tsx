@@ -8,7 +8,7 @@ const LogoutSuccessToast = () => {
   const serarchParams = useSearchParams();
   useEffect(() => {
     if (serarchParams.get("logout") === "true") {
-      toast.success("Logout successfully",{duration:1000});
+      toast.success("Logout successfully",{duration:2000});
 
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete("logout");

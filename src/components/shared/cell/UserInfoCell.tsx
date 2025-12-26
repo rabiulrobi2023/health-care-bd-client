@@ -12,7 +12,7 @@ interface IUserInfoCellProps {
 
 const UserInfoCell = ({ name, email, photo }: IUserInfoCellProps) => {
   return (
-    <div className="max-w-[180px]">
+    <div className="w-[200px]">
       <Avatar className="border-green-500 border-2 w-15 h-15">
         {photo ? (
           <Image src={photo} alt={name} width={90} height={90} />

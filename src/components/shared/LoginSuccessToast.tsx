@@ -9,7 +9,7 @@ const LoginSuccessToast = () => {
 
   useEffect(() => {
     if (serarchParams.get("login") === "true") {
-      toast.success("Login successfully", { duration: 1000 });
+      toast.success("Login successfully", { duration: 2000 });
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete("login");
       router.replace(newUrl.toString());
