@@ -28,9 +28,9 @@ export default function Password({ ...field }) {
           aria-controls="password"
         >
           {isVisible ? (
-            <EyeOffIcon size={16} aria-hidden="true" />
+            <EyeIcon size={24} aria-hidden="true" />
           ) : (
-            <EyeIcon size={16} aria-hidden="true" />
+            <EyeOffIcon size={24} aria-hidden="true" />
           )}
         </button>
       </div>

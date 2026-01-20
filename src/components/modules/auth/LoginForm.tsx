@@ -9,10 +9,11 @@ import Password from "@/components/ui/password";
 import { useActionState, useEffect } from "react";
 
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { LoaderCircle } from "lucide-react";
+import { Loader2, LoaderCircle, LoaderPinwheel, LoaderPinwheelIcon } from "lucide-react";
 import { loginUser } from "@/services/auth/loginUser";
 import { toast } from "sonner";
 import InputFieldErrorMessage from "@/components/shared/InputFieldErrorMessage";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginForm({ redirect }: { redirect?: string }) {
   const [state, formAction, isPending] = useActionState(loginUser, null);
@@ -53,7 +54,8 @@ export default function LoginForm({ redirect }: { redirect?: string }) {
           {isPending ? (
             <>
               <p>Login</p>
-              <LoaderCircle />
+             <LoaderPinwheelIcon className="animate-spin"/>
+              
             </>
           ) : (
             "Login"

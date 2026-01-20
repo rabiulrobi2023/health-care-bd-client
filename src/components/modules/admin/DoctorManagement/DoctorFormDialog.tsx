@@ -3,7 +3,7 @@ import { TDoctor } from "@/interface/doctor.interface";
 import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { TGender } from "@/interface/share.interface";
-import { Gender } from "@/const/const";
+import { Gender, UserRoles } from "@/const/const";
 import { doctorService } from "@/services/admin/doctorManagement";
 import { toast } from "sonner";
 import {
@@ -23,6 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { TUserInfoFormToken } from "@/types/types";
+import { useSpecialtySelection } from "@/hooks/useSpecialtySelection";
+import MultiSpecialtySelect from "./MultiSpecialtySelect";
 
 interface IDoctorFormDialogProps {
   open: boolean;
@@ -30,6 +33,7 @@ interface IDoctorFormDialogProps {
   onSuccess: () => void;
   doctor?: TDoctor;
   specialties?: TSpecialty[];
+  userInfo?: TUserInfoFormToken;
 }
 
 const DoctorFormDialog = ({
@@ -38,20 +42,39 @@ const DoctorFormDialog = ({
   onSuccess,
   doctor,
   specialties,
+  userInfo,
 }: IDoctorFormDialogProps) => {
+  console.log("User Information:", userInfo);
   const isUpdate = !!doctor;
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("");
   const [gender, setGender] = useState<TGender>(
-    isUpdate ? doctor?.gender : Gender.MALE
+    isUpdate ? doctor?.gender : Gender.MALE,
   );
   const [state, formAction, pending] = useActionState(
     isUpdate
       ? doctorService.updateDoctor.bind(null, doctor.id!)
       : doctorService.createDoctor,
-    null
+    null,
   );
   const hasHandledRef = useRef(false);
+  const specialtiesSelection = useSpecialtySelection({
+    doctor,
+    isUpdate,
+    open,
+  });
+  const {
+    currentSpecialtyId,
+    getAvailableSpecialties,
+    getNewSpecialties,
+    handleAddSpecialty,
+    handleRemoveSpecialty,
+    removedSpecialtyIds,
+    selectedSpecialtyIds,
+    setCurrentSpecialtyId,
+  } = specialtiesSelection;
 
+  const getSpecialtyTitle = (id: string) => {
+    return specialties?.find((s) => s.id === id)?.title || "Unkonown";
+  };
   useEffect(() => {
     if (!state) return;
     if (state?.success && !hasHandledRef.current) {
@@ -93,41 +116,23 @@ const DoctorFormDialog = ({
                 name="email"
                 placeholder="example@mail.com"
                 defaultValue={isUpdate ? doctor.email : undefined}
+                disabled={isUpdate}
               />
               <InputFieldErrorMessage field="email" state={state} />
             </Field>
 
-            <Field>
-              <FieldLabel htmlFor="specialty">Specialty</FieldLabel>
-              <Input
-                id="specialty"
-                name="specialty"
-                placeholder={selectedSpecialty}
-                type="hidden"
-              />
-              <Select
-                value={selectedSpecialty}
-                onValueChange={setSelectedSpecialty}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a specialty" />
-                </SelectTrigger>
-                <SelectContent>
-                  {specialties && specialties.length > 0 ? (
-                    specialties.map((specialty) => (
-                      <SelectItem key={specialty.id} value={specialty.title}>
-                        {specialty.title}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectItem value="none">
-                      No specialties available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-              <InputFieldErrorMessage field="specialty" state={state} />
-            </Field>
+            <MultiSpecialtySelect
+              selectedSpecialtyIds={selectedSpecialtyIds}
+              removedSpecialtyIds={removedSpecialtyIds}
+              currentSpecialtyId={currentSpecialtyId}
+              availableSpecialties={getAvailableSpecialties(specialties || [])}
+              isEdit={isUpdate}
+              onCurrentSpecialtyChange={setCurrentSpecialtyId}
+              onAddSpecialty={handleAddSpecialty}
+              onRemoveSpecialty={handleRemoveSpecialty}
+              getSpecialtyTitle={getSpecialtyTitle}
+              getNewSpecialtes={getNewSpecialties}
+            />
             <Field>
               <FieldLabel htmlFor="contactNumber">Contact Number</FieldLabel>
               <Input
@@ -261,7 +266,7 @@ const DoctorFormDialog = ({
               <InputFieldErrorMessage state={state} field="designation" />
             </Field>
 
-            {isUpdate && (
+            {isUpdate && userInfo?.role === UserRoles.DOCTOR && (
               <Field>
                 <FieldLabel htmlFor="profilePhoto">Profile Photo</FieldLabel>
                 <Input

@@ -10,7 +10,7 @@ const SpecialtiesManagementPage = async () => {
   return (
     <div className="space-y-6">
       <SpecialtiesMangementHeader />
-      <Suspense fallback={<TableSkeleton columns={2} rows={10}/>}>
+      <Suspense fallback={<TableSkeleton columns={3} rows={10}/>}>
         <SpecialitiesTable specialities={specialties.data} />
       </Suspense>
     </div>

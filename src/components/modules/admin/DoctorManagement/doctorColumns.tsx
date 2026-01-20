@@ -4,13 +4,14 @@ import DateCell from "@/components/shared/cell/DateCell";
 import StatusBadgeCell from "@/components/shared/cell/StatusBadgeCell";
 import UserInfoCell from "@/components/shared/cell/UserInfoCell";
 import { TColumn } from "@/components/shared/ManagementTable";
+import { Badge } from "@/components/ui/badge";
 import { TDoctor } from "@/interface/doctor.interface";
 import { Star } from "lucide-react";
 
 const doctorColumn: TColumn<TDoctor>[] = [
   {
     header: "Doctor",
-    className:"w-[180px]",
+    className: "",
     accessor: (doctor) => (
       <UserInfoCell
         name={doctor.name}
@@ -23,10 +24,10 @@ const doctorColumn: TColumn<TDoctor>[] = [
   {
     header: "Specialties",
     accessor: (doctor) => (
-      <div>
-        {doctor?.doctorSpecialtes && doctor.doctorSpecialtes?.length > 0 ? (
-          doctor.doctorSpecialtes?.map((specialty, index) => (
-            <span key={index}>{specialty.titile}</span>
+      <div className="flex gap-1">
+        {doctor?.doctorSpecialties && doctor?.doctorSpecialties?.length > 0 ? (
+          doctor?.doctorSpecialties?.map((specialty, index) => (
+            <Badge className="rounded-sm" key={index}>{specialty?.specialties?.title}</Badge>
           ))
         ) : (
           <span>No specialties</span>
@@ -61,10 +62,10 @@ const doctorColumn: TColumn<TDoctor>[] = [
   {
     header: "Rating",
     accessor: (doctor) => (
-      <div>
+      <span className="flex gap-2 items-center">
         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
         <span>{doctor.rating}</span>
-      </div>
+      </span>
     ),
   },
   {

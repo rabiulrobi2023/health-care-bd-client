@@ -16,8 +16,9 @@ export const createDoctorZodSchema = z.object({
   experience: z.number().min(0, "Experience cannot be negative").optional(),
   gender: z.enum(
     Object.keys(Gender),
-    "Gender must be either 'MALE' or 'FEMALE' or 'OTHERS'"
+    "Gender must be either 'MALE' or 'FEMALE' or 'OTHERS'",
   ),
+  specialties: z.string().array().nonempty("Minimum one specialty required"),
   appoinmentFee: z.number().min(0, "Appointment Fee cannot be negative"),
   qualification: z
     .string()

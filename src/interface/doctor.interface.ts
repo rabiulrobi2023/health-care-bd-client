@@ -13,14 +13,19 @@ export interface TDoctor {
   experience: number;
   currentWorkingPlace: string;
   designation: string;
+  specialties: string[];
   appoinmentFee: number;
   rating?: number;
   createdAt?: string;
   updatedAt?: string;
-  doctorSpecialtes?: Array<{
-    id: string;
-    titile: string;
-    icon?: string;
+  doctorSpecialties?: Array<{
+    doctorId: string;
+    specialtiesId: string;
+    specialties: {
+      id: string;
+      title: string;
+      icon?: string;
+    };
   }>;
   isDeleted?: boolean;
 }

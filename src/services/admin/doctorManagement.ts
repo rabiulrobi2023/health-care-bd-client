@@ -12,48 +12,61 @@ import {
 import { errorMessage } from "../utils/errorMessage";
 
 const createDoctor = async (_preState: any, formData: FormData) => {
+  let specialties: string[] = [];
+  try {
+    const parseSpecialtes = JSON.parse(formData.get("specialties") as string);
+    specialties = Array.isArray(parseSpecialtes) ? parseSpecialtes : [];
+  } catch {
+    specialties = [];
+  }
   try {
     const payload: TDoctor = {
-      name: formData.get("name") as string,
-      email: formData.get("email") as string,
-      contactNumber: formData.get("contactNumber") as string,
-      address: formData.get("address") as string,
-      registrationNumber: formData.get("registrationNumber") as string,
-      experience: Number(formData.get("expreience")) as number,
+      name: String(formData.get("name")),
+      email: String(formData.get("email")),
+      contactNumber: String(formData.get("contactNumber")),
+      address: String(formData.get("address")),
+      registrationNumber: String(formData.get("registrationNumber")),
+      experience: Number(formData.get("experience")),
       gender: formData.get("gender") as TGender,
-      appoinmentFee: Number(formData.get("appoinmentFee")) as number,
-      qualification: formData.get("qualification") as string,
-      currentWorkingPlace: formData.get("currentWorkingPlace") as string,
-      designation: formData.get("designation") as string,
+      appoinmentFee: Number(formData.get("appoinmentFee")),
+      specialties,
+      qualification: String(formData.get("qualification")),
+      currentWorkingPlace: String(formData.get("currentWorkingPlace")),
+      designation: String(formData.get("designation")),
     };
-
-    console.log("payload", payload);
 
     const isValidatedPayload = validationRequest(
       payload,
-      createDoctorZodSchema
+      createDoctorZodSchema,
     );
 
-    console.log(isValidatedPayload);
     if (!isValidatedPayload.success) {
       return isValidatedPayload;
     }
 
     const validatedPayload: any = isValidatedPayload.data;
 
+    // const doctorData = {
+    //   name: validatedPayload.name,
+    //   email: validatedPayload.email,
+    //   contactNumber: validatedPayload.contactNumber,
+    //   address: validatedPayload.address,
+    //   registrationNumber: validatedPayload.registrationNumber,
+    //   experience: validatedPayload.experience,
+    //   gender: validatedPayload.gender,
+    //   appoinmentFee: validatedPayload.appoinmentFee,
+    //   qualification: validatedPayload.qualification,
+    //   specialties: validatedPayload.specialties,
+    //   currentWorkingPlace: validatedPayload.currentWorkingPlace,
+    //   designation: validatedPayload.designation,
+    // };
+
+    // or
+
     const doctorData = {
-      name: validatedPayload.name,
-      email: validatedPayload.email,
-      contactNumber: validatedPayload.contactNumber,
-      address: validatedPayload.address,
-      registrationNumber: validatedPayload.registrationNumber,
-      experience: validatedPayload.experience,
-      gender: validatedPayload.gender,
-      appoinmentFee: validatedPayload.appoinmentFee,
-      qualification: validatedPayload.qualification,
-      currentWorkingPlace: validatedPayload.currentWorkingPlace,
-      designation: validatedPayload.designation,
+      ...validatedPayload,
     };
+
     const newFormData = new FormData();
     newFormData.append("data", JSON.stringify(doctorData));
 
@@ -83,7 +96,7 @@ const createDoctor = async (_preState: any, formData: FormData) => {
 const getAllDoctros = async (queryString: string) => {
   try {
     const res = await serverFetch.get(
-      `/doctor${`${queryString ? `?${queryString}` : ""}`}`
+      `/doctor${`${queryString ? `?${queryString}` : ""}`}`,
     );
     const result = await res.json();
     return result;
@@ -114,7 +127,7 @@ const getSingleDoctor = async (id: string) => {
 const updateDoctor = async (
   id: string,
   _prevState: any,
-  formData: FormData
+  formData: FormData,
 ) => {
   try {
     const payload: Partial<TDoctor> = {
@@ -122,9 +135,9 @@ const updateDoctor = async (
       contactNumber: formData.get("contactNumber") as string,
       address: formData.get("address") as string,
       registrationNumber: formData.get("registrationNumber") as string,
-      experience: Number(formData.get("experience") as string),
+      experience: Number(formData.get("experience")) as number,
       gender: formData.get("gender") as "MALE" | "FEMALE",
-      appoinmentFee: Number(formData.get("appointmentFee") as string),
+      appoinmentFee: Number(formData.get("appoinmentFee")) as number,
       qualification: formData.get("qualification") as string,
       currentWorkingPlace: formData.get("currentWorkingPlace") as string,
       designation: formData.get("designation") as string,
@@ -132,21 +145,25 @@ const updateDoctor = async (
 
     const isValidatedPayload = validationRequest(
       payload,
-      updateDoctorZodSchema
-    ).data;
+      updateDoctorZodSchema,
+    );
 
-    if (!isValidatedPayload) {
+    if (!isValidatedPayload.success) {
       return isValidatedPayload;
     }
 
-    const newFormData = new FormData();
-    newFormData.append("data", JSON.stringify(isValidatedPayload));
+    const validatedPayload: any = isValidatedPayload.data;
 
-    if (formData.get("file")) {
-      newFormData.append("file", formData.get("file") as Blob);
-    }
+    // const newFormData = new FormData();
+    // newFormData.append("data", JSON.stringify(isValidatedPayload));
 
-    const res = await serverFetch.patch(`/doctor/${id}`, { body: newFormData });
+    const res = await serverFetch.patch(`/doctor/${id}`, {
+      body: JSON.stringify(validatedPayload),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     const result = res.json();
     return result;
   } catch (error: any) {

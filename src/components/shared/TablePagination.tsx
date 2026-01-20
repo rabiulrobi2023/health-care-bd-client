@@ -61,7 +61,7 @@ const TablePagination = ({
         className="border-0 bg-transparent shadow-none hover:bg-transparent hover:text-primary"
         onClick={() => navigateToPage(currentPage - 1)}
       >
-        <ChevronLeft className="h-4 w-4 mr-1" /> Previous
+        <ChevronLeft className="h-4 w-4" /> Previous
       </Button>
 
       <div className="flex items-center gap-6">
@@ -86,7 +86,8 @@ const TablePagination = ({
         className="border-0 bg-transparent shadow-none hover:bg-transparent hover:text-primary"
         onClick={() => navigateToPage(currentPage + 1)}
       >
-        <ChevronRight className="h-4 w-4 ml-1" /> Next
+        Next
+        <ChevronRight className="h-4 w-4" />
       </Button>
 
       <span className="ml-2 text-sm text-muted-foreground">

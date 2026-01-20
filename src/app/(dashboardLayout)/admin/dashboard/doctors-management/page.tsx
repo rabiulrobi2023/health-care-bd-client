@@ -11,6 +11,8 @@ import { getQueryString } from "@/lib/formatters";
 import { doctorService } from "@/services/admin/doctorManagement";
 
 import { specialtiesService } from "@/services/admin/specialtiesManagement";
+import { getUserInfoFromToken } from "@/services/auth/getUserInfoFromToken";
+import { TUserInfoFormToken } from "@/types/types";
 
 import { Suspense } from "react";
 
@@ -30,6 +32,8 @@ const DcoctorManagementPage = async ({
   };
 
   const specialtes = await specialtiesService.getAllSpecialties();
+  const userInfo = await getUserInfoFromToken() as TUserInfoFormToken;
+  const specialtiesData = await specialtes.data;
 
   return (
     <div className="flex flex-col gap-6">
@@ -57,7 +61,11 @@ const DcoctorManagementPage = async ({
         </div>
       </div>
       <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
-        <DoctorManagementTable doctor={doctor?.data?.data} />
+        <DoctorManagementTable
+          doctor={doctor?.data?.data}
+          specialties={specialtiesData}
+          userInfo={userInfo}
+        />
         <TablePagination
           currentPage={metaData.currentPage}
           totalpage={metaData.totalPage}
