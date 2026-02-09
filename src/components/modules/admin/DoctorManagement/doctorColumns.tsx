@@ -5,10 +5,10 @@ import StatusBadgeCell from "@/components/shared/cell/StatusBadgeCell";
 import UserInfoCell from "@/components/shared/cell/UserInfoCell";
 import { TColumn } from "@/components/shared/ManagementTable";
 import { Badge } from "@/components/ui/badge";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import { Star } from "lucide-react";
 
-const doctorColumn: TColumn<TDoctor>[] = [
+const doctorColumn: TColumn<IDoctor>[] = [
   {
     header: "Doctor",
     className: "",
@@ -16,7 +16,7 @@ const doctorColumn: TColumn<TDoctor>[] = [
       <UserInfoCell
         name={doctor.name}
         email={doctor.email}
-        photo={doctor.profilePhoto}
+        photo={doctor.profilePhoto as string}
       />
     ),
   },
@@ -24,10 +24,15 @@ const doctorColumn: TColumn<TDoctor>[] = [
   {
     header: "Specialties",
     accessor: (doctor) => (
-      <div className="flex gap-1">
+      <div className="flex gap-1 flex-wrap">
         {doctor?.doctorSpecialties && doctor?.doctorSpecialties?.length > 0 ? (
           doctor?.doctorSpecialties?.map((specialty, index) => (
-            <Badge className="rounded-sm" key={index}>{specialty?.specialties?.title}</Badge>
+            <Badge
+              className="rounded-sm outline-1 bg-transparent text-gray-700"
+              key={index}
+            >
+              {specialty?.specialties?.title}
+            </Badge>
           ))
         ) : (
           <span>No specialties</span>

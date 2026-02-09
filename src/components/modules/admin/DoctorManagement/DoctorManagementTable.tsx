@@ -1,5 +1,5 @@
 "use client";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import ManagementTable from "@/components/shared/ManagementTable";
 import doctorColumn from "./doctorColumns";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,7 @@ import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
 import { TUserInfoFormToken } from "@/types/types";
 
 interface IDoctorManagementTableProps {
-  doctor: TDoctor[];
+  doctor: IDoctor[];
   specialties: TSpecialty[];
   userInfo: TUserInfoFormToken;
 }
@@ -26,10 +26,10 @@ const DoctorManagementTable = ({
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  const [deletingDoctor, setDeletingDoctor] = useState<TDoctor | null>(null);
+  const [deletingDoctor, setDeletingDoctor] = useState<IDoctor | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [viewingDoctor, setViewingDoctor] = useState<TDoctor | null>(null);
-  const [updatingDoctor, setUpdatingDoctor] = useState<TDoctor | null>(null);
+  const [viewingDoctor, setViewingDoctor] = useState<IDoctor | null>(null);
+  const [updatingDoctor, setUpdatingDoctor] = useState<IDoctor | null>(null);
 
   const handleRefresh = () => {
     startTransition(() => {
@@ -37,14 +37,14 @@ const DoctorManagementTable = ({
     });
   };
 
-  const handleDeleteDoctor = (doctor: TDoctor) => setDeletingDoctor(doctor);
+  const handleDeleteDoctor = (doctor: IDoctor) => setDeletingDoctor(doctor);
 
   const confirmDeleteDoctor = async () => {
     if (!deletingDoctor) return;
     setIsDeleting(true);
 
     const result = await doctorService.deleteDoctor(
-      deletingDoctor.id as string
+      deletingDoctor.id as string,
     );
     setIsDeleting(false);
 
@@ -55,11 +55,10 @@ const DoctorManagementTable = ({
     }
   };
 
-  const handleDoctorUpdateDoctor = (doctor: TDoctor) =>
+  const handleDoctorUpdateDoctor = (doctor: IDoctor) =>
     setUpdatingDoctor(doctor);
 
-
-  const handleView = (doctor: TDoctor) => setViewingDoctor(doctor);
+  const handleView = (doctor: IDoctor) => setViewingDoctor(doctor);
   return (
     <>
       <ManagementTable

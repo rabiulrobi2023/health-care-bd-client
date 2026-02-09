@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import { formatDateTime, getInitials } from "@/lib/formatters";
 
 import {
@@ -27,7 +27,7 @@ import {
 interface IDoctorViewDialogProps {
   open: boolean;
   onClose: () => void;
-  doctor: TDoctor | null;
+  doctor: IDoctor | null;
 }
 
 const DoctorViewDetailDialog = ({
@@ -144,28 +144,29 @@ const DoctorViewDetailDialog = ({
             <Separator />
 
             {/* Specialties */}
-            {doctor?.doctorSpecialties && doctor.doctorSpecialties.length > 0 && (
-              <>
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Stethoscope className="h-5 w-5 text-green-600" />
-                    <h3 className="font-semibold text-lg">Specialties</h3>
+            {doctor?.doctorSpecialties &&
+              doctor.doctorSpecialties.length > 0 && (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Stethoscope className="h-5 w-5 text-green-600" />
+                      <h3 className="font-semibold text-lg">Specialties</h3>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {doctor.doctorSpecialties.map((specialty, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="px-4 py-2 text-sm"
+                        >
+                          {specialty?.specialties.title || "Unknown"}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {doctor.doctorSpecialties.map((specialty, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="px-4 py-2 text-sm"
-                      >
-                        {specialty?.specialties.title || "Unknown"}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-                <Separator />
-              </>
-            )}
+                  <Separator />
+                </>
+              )}
 
             {/* Contact Information */}
             <div>

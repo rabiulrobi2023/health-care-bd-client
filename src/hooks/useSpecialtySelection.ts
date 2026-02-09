@@ -1,16 +1,16 @@
 import { TSpecialty } from "@/components/modules/admin/SpecialtiesManagement/specialty.interface";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import { useEffect, useState } from "react";
 
 interface IUseSpecialtySelectionProps {
-  doctor?: TDoctor;
+  doctor?: IDoctor;
   isUpdate: boolean;
   open: boolean;
 }
 
 interface IUseSpecialtySelectionReturn {
   selectedSpecialtyIds: string[];
-  removedSpecialtyIds: string[];
+  removedSpecialties: string[];
   currentSpecialtyId: string;
 
   setCurrentSpecialtyId: (id: string) => void;
@@ -18,7 +18,7 @@ interface IUseSpecialtySelectionReturn {
   handleRemoveSpecialty: (id: string) => void;
   getNewSpecialties: () => string[];
   getAvailableSpecialties: (allSpecialties: TSpecialty[]) => TSpecialty[];
-} 
+}
 
 export const useSpecialtySelection = ({
   doctor,
@@ -28,19 +28,19 @@ export const useSpecialtySelection = ({
   const getInitialSpecialtyIds = () => {
     if (
       isUpdate &&
-      doctor?.doctorSpecialtes &&
-      doctor.doctorSpecialtes.length > 0
+      doctor?.doctorSpecialties &&
+      doctor.doctorSpecialties.length > 0
     ) {
-      return doctor.doctorSpecialtes.map((ds) => ds.specialtiesId);
+      return doctor.doctorSpecialties.map((ds) => ds.specialtiesId);
     }
     return [];
   };
 
   const [selectedSpecialtyIds, setSelectedSpecialtyIds] = useState<string[]>(
-    getInitialSpecialtyIds
+    getInitialSpecialtyIds,
   );
 
-  const [removedSpecialtyIds, setRemovedSpecialtyIds] = useState<string[]>([]);
+  const [removedSpecialties, setRemovedSpecialtyIds] = useState<string[]>([]);
   const [currentSpecialtyId, setCurrentSpecialtyId] = useState<string>("");
 
   const handleAddSpecialty = () => {
@@ -49,9 +49,9 @@ export const useSpecialtySelection = ({
       !selectedSpecialtyIds.includes(currentSpecialtyId)
     ) {
       setSelectedSpecialtyIds((prev) => [...prev, currentSpecialtyId]);
-      if (removedSpecialtyIds.includes(currentSpecialtyId)) {
+      if (removedSpecialties.includes(currentSpecialtyId)) {
         setRemovedSpecialtyIds(
-          removedSpecialtyIds.filter((rs) => rs !== currentSpecialtyId)
+          removedSpecialties.filter((rs) => rs !== currentSpecialtyId),
         );
       }
       setCurrentSpecialtyId("");
@@ -60,35 +60,35 @@ export const useSpecialtySelection = ({
 
   const handleRemoveSpecialty = (specialtyId: string) => {
     setSelectedSpecialtyIds(
-      selectedSpecialtyIds.filter((sp) => sp !== specialtyId)
+      selectedSpecialtyIds.filter((sp) => sp !== specialtyId),
     );
     if (
       isUpdate &&
-      doctor?.doctorSpecialtes &&
-      doctor.doctorSpecialtes.length > 0
+      doctor?.doctorSpecialties &&
+      doctor.doctorSpecialties.length > 0
     ) {
-      const wasOriginalSpecialty = doctor.doctorSpecialtes?.some((ds) => {
+      const wasOriginalSpecialty = doctor.doctorSpecialties?.some((ds) => {
         const id = ds.specialtiesId;
         return id === specialtyId;
       });
 
-      if (wasOriginalSpecialty && !removedSpecialtyIds.includes(specialtyId)) {
-        setRemovedSpecialtyIds([...removedSpecialtyIds, specialtyId]);
+      if (wasOriginalSpecialty && !removedSpecialties.includes(specialtyId)) {
+        setRemovedSpecialtyIds([...removedSpecialties, specialtyId]);
       }
     }
   };
 
   const getNewSpecialties = (): string[] => {
-    if (!isUpdate || !doctor?.doctorSpecialtes) {
+    if (!isUpdate || !doctor?.doctorSpecialties) {
       return selectedSpecialtyIds;
     }
 
     const originalSpecialtiesIds =
-      doctor.doctorSpecialtes
+      doctor.doctorSpecialties
         .map((ds) => ds.specialtiesId || null)
         .filter((id): id is string => !!id) || [];
     return selectedSpecialtyIds.filter(
-      (id) => !originalSpecialtiesIds.includes(id)
+      (id) => !originalSpecialtiesIds.includes(id),
     );
   };
 
@@ -109,7 +109,7 @@ export const useSpecialtySelection = ({
 
   return {
     selectedSpecialtyIds,
-    removedSpecialtyIds,
+    removedSpecialties,
     currentSpecialtyId,
     setCurrentSpecialtyId,
     handleAddSpecialty,

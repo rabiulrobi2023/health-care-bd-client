@@ -2,33 +2,49 @@ import { Gender } from "@/const/const";
 import z from "zod";
 
 export const createDoctorZodSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters long"),
-  email: z.email("Invalid email address"),
+  name: z
+    .string()
+    .min(1, "Name is requird")
+    .min(3, "Name must be at least 3 characters long"),
+  email: z.email("Invalid email address").min(1, "Email is required"),
   contactNumber: z
     .string()
+    .min(1, "Contact number is required")
     .nonempty("Contact number is required")
     .regex(/^01[3-9]\d{8}$/, "Invalid mobile number")
     .trim(),
   address: z.string().optional(),
   registrationNumber: z
     .string()
+    .min(1, "Registration number is required")
     .min(3, "Registration Number must be at least 3 characters long"),
-  experience: z.number().min(0, "Experience cannot be negative").optional(),
+  experience: z
+    .number()
+    .positive("Experience is required and must be positive"),
+
   gender: z.enum(
     Object.keys(Gender),
     "Gender must be either 'MALE' or 'FEMALE' or 'OTHERS'",
   ),
   specialties: z.string().array().nonempty("Minimum one specialty required"),
-  appoinmentFee: z.number().min(0, "Appointment Fee cannot be negative"),
+  appoinmentFee: z
+    .number()
+    .positive("Appointment fee must be required and positive"),
   qualification: z
     .string()
+    .min(1, "Qualification is required")
     .min(3, "Qualification must be at least 3 characters long"),
   currentWorkingPlace: z
     .string()
+    .min(1, "Working place is required")
     .min(3, "Current Working Place must be at least 3 characters long"),
   designation: z
     .string()
+    .min(1, "Designation is required")
     .min(2, "Designation must be at least 2 characters long"),
+  profilePhoto: z
+    .instanceof(File)
+    .refine((file) => file.size > 0, { message: "Profile photo is required" }),
 });
 
 export const updateDoctorZodSchema = z.object({
@@ -64,4 +80,11 @@ export const updateDoctorZodSchema = z.object({
     .string()
     .min(2, "Designation must be at least 2 characters long")
     .optional(),
+
+  specialties: z.array(
+    z
+      .uuid("Each specialty must be a valid UUID")
+      .min(1, "Atleast one specialty is required"),
+  ),
+  removedSpecialties: z.array(z.uuid("Each specialty must be a valid UUID")),
 });

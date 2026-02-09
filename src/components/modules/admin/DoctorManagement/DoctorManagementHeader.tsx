@@ -4,31 +4,37 @@ import { useState, useTransition } from "react";
 import DoctorFormDialog from "./DoctorFormDialog";
 import { useRouter } from "next/navigation";
 import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import MamangementPageHeader from "@/components/shared/MamangementPageHeader";
 import { Plus } from "lucide-react";
 
 interface IDoctorMangementHeaderProps {
   specialties?: TSpecialty[];
-  doctor?: TDoctor;
+  doctor?: IDoctor;
 }
 const DoctorManagementHeader = ({
   specialties,
   doctor,
 }: IDoctorMangementHeaderProps) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const [, startTransition] = useTransition();
   const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogKey, setDialogKey] = useState(0);
+  const [, startTransition] = useTransition();
 
+  const handleOpenDialog = () => {
+    setDialogKey((pre) => pre + 1);
+    setIsDialogOpen(true);
+  };
   const handleSuccess = () => {
     startTransition(() => {
       router.refresh();
     });
   };
+
   return (
     <>
       <DoctorFormDialog
+        key={dialogKey}
         open={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onSuccess={handleSuccess}
@@ -41,7 +47,7 @@ const DoctorManagementHeader = ({
         action={{
           label: "Add Doctor",
           icon: Plus,
-          onClick: () => setIsDialogOpen(true),
+          onClick: handleOpenDialog,
         }}
       />
     </>

@@ -1,7 +1,7 @@
 "use client";
-import { TDoctor } from "@/interface/doctor.interface";
+import { IDoctor } from "@/interface/doctor.interface";
 import { TSpecialty } from "../SpecialtiesManagement/specialty.interface";
-import { useActionState, useEffect, useRef, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState } from "react";
 import { TGender } from "@/interface/share.interface";
 import { Gender, UserRoles } from "@/const/const";
 import { doctorService } from "@/services/admin/doctorManagement";
@@ -26,12 +26,13 @@ import { Button } from "@/components/ui/button";
 import { TUserInfoFormToken } from "@/types/types";
 import { useSpecialtySelection } from "@/hooks/useSpecialtySelection";
 import MultiSpecialtySelect from "./MultiSpecialtySelect";
+import Image from "next/image";
 
 interface IDoctorFormDialogProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  doctor?: TDoctor;
+  doctor?: IDoctor;
   specialties?: TSpecialty[];
   userInfo?: TUserInfoFormToken;
 }
@@ -42,20 +43,24 @@ const DoctorFormDialog = ({
   onSuccess,
   doctor,
   specialties,
-  userInfo,
 }: IDoctorFormDialogProps) => {
-  console.log("User Information:", userInfo);
   const isUpdate = !!doctor;
-  const [gender, setGender] = useState<TGender>(
-    isUpdate ? doctor?.gender : Gender.MALE,
+  const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [gender, setGender] = useState<TGender | undefined>(
+    () => doctor?.gender,
   );
+
+  const [selectFile, setSelectfile] = useState<File | null>(null);
+
   const [state, formAction, pending] = useActionState(
     isUpdate
       ? doctorService.updateDoctor.bind(null, doctor.id!)
       : doctorService.createDoctor,
     null,
   );
-  const hasHandledRef = useRef(false);
+
   const specialtiesSelection = useSpecialtySelection({
     doctor,
     isUpdate,
@@ -67,7 +72,7 @@ const DoctorFormDialog = ({
     getNewSpecialties,
     handleAddSpecialty,
     handleRemoveSpecialty,
-    removedSpecialtyIds,
+    removedSpecialties,
     selectedSpecialtyIds,
     setCurrentSpecialtyId,
   } = specialtiesSelection;
@@ -75,28 +80,59 @@ const DoctorFormDialog = ({
   const getSpecialtyTitle = (id: string) => {
     return specialties?.find((s) => s.id === id)?.title || "Unkonown";
   };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files?.[0];
+      setSelectfile(file || null);
+    }
+  };
+
+  const handleClose = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    if (selectFile) {
+      setSelectfile(null);
+    }
+    formRef.current?.reset();
+    onClose();
+  };
+
+  const prevSuccessRef = useRef<boolean | null>(null);
+
   useEffect(() => {
-    if (!state) return;
-    if (state?.success && !hasHandledRef.current) {
-      hasHandledRef.current = true;
-      toast.success(state.message);
+    if (state?.success && prevSuccessRef.current !== true) {
+      toast.success("Doctor updated successfully");
+
+      formRef.current?.reset();
       onSuccess();
       onClose();
-    } else if (!state?.success && !hasHandledRef.current) {
-      hasHandledRef.current = true;
-      toast.error(state.message);
     }
-  }, [state, onSuccess, onClose]);
+
+    if (state && state.success === false && prevSuccessRef.current !== false) {
+      toast.error(state.message || "Something went wrong");
+
+      if (selectFile && fileInputRef.current) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(selectFile);
+        fileInputRef.current.files = dataTransfer.files;
+      }
+    }
+
+    prevSuccessRef.current = state?.success ?? null;
+  }, [state?.success, onClose, onSuccess, state, selectFile]);
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-h-[90vh] overflow-y-scroll">
         <DialogHeader>
           <DialogTitle className="font-bold text-3xl text-center">
             {isUpdate ? "Edit Doctor" : "Create a New Doctor"}
           </DialogTitle>
         </DialogHeader>
-        <form action={formAction} className="flex flex-col gap-5">
+        <form ref={formRef} action={formAction} className="flex flex-col gap-5">
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Name</FieldLabel>
@@ -104,7 +140,9 @@ const DoctorFormDialog = ({
                 id="name"
                 name="name"
                 placeholder="Dr. Rabiul Islam"
-                defaultValue={isUpdate ? doctor.name : undefined}
+                defaultValue={
+                  state?.formData?.name || (isUpdate ? doctor?.name : "")
+                }
               />
               <InputFieldErrorMessage field="name" state={state} />
             </Field>
@@ -115,7 +153,9 @@ const DoctorFormDialog = ({
                 id="email"
                 name="email"
                 placeholder="example@mail.com"
-                defaultValue={isUpdate ? doctor.email : undefined}
+                defaultValue={
+                  state?.formData?.email || (isUpdate ? doctor?.email : "")
+                }
                 disabled={isUpdate}
               />
               <InputFieldErrorMessage field="email" state={state} />
@@ -123,7 +163,7 @@ const DoctorFormDialog = ({
 
             <MultiSpecialtySelect
               selectedSpecialtyIds={selectedSpecialtyIds}
-              removedSpecialtyIds={removedSpecialtyIds}
+              removedSpecialtyIds={removedSpecialties}
               currentSpecialtyId={currentSpecialtyId}
               availableSpecialties={getAvailableSpecialties(specialties || [])}
               isEdit={isUpdate}
@@ -139,7 +179,10 @@ const DoctorFormDialog = ({
                 id="contactNumber"
                 name="contactNumber"
                 placeholder="017504589754"
-                defaultValue={isUpdate ? doctor?.contactNumber : undefined}
+                defaultValue={
+                  state?.formData?.contactNumber ||
+                  (isUpdate ? doctor?.contactNumber : "")
+                }
               />
               <InputFieldErrorMessage state={state} field="contactNumber" />
             </Field>
@@ -150,7 +193,10 @@ const DoctorFormDialog = ({
                 id="address"
                 name="address"
                 placeholder="123 Main St, City, Country"
-                defaultValue={isUpdate ? doctor?.address : undefined}
+                defaultValue={
+                  state?.formData?.address ||
+                  (isUpdate ? doctor?.address : undefined)
+                }
               />
               <InputFieldErrorMessage field="address" state={state} />
             </Field>
@@ -163,7 +209,10 @@ const DoctorFormDialog = ({
                 id="registrationNumber"
                 name="registrationNumber"
                 placeholder="REG123456"
-                defaultValue={isUpdate ? doctor?.registrationNumber : undefined}
+                defaultValue={
+                  state?.formData?.registrationNumber ||
+                  (isUpdate ? doctor?.registrationNumber : "")
+                }
               />
               <InputFieldErrorMessage
                 state={state}
@@ -180,7 +229,10 @@ const DoctorFormDialog = ({
                 name="experience"
                 type="number"
                 placeholder="5"
-                defaultValue={isUpdate ? doctor?.experience : undefined}
+                defaultValue={
+                  state?.formData?.experience ||
+                  (isUpdate ? doctor?.experience : undefined)
+                }
                 min="0"
               />
               <InputFieldErrorMessage state={state} field="experience" />
@@ -188,20 +240,22 @@ const DoctorFormDialog = ({
 
             <Field>
               <FieldLabel htmlFor="gender">Gender</FieldLabel>
+
               <Input
-                id=""
+                id="gender"
                 name="gender"
                 type="hidden"
-                placeholder="Select Geender"
-                defaultValue={isUpdate ? doctor.gender : Gender.MALE}
+                value={gender ?? doctor?.gender ?? ""}
               />
+
               <Select
-                value={gender}
+                value={gender ?? doctor?.gender}
                 onValueChange={(value) => setGender(value as TGender)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
+
                 <SelectContent>
                   {Object.keys(Gender).map((item) => (
                     <SelectItem value={item} key={item}>
@@ -210,6 +264,7 @@ const DoctorFormDialog = ({
                   ))}
                 </SelectContent>
               </Select>
+
               <InputFieldErrorMessage field="gender" state={state} />
             </Field>
 
@@ -220,7 +275,10 @@ const DoctorFormDialog = ({
                 name="appoinmentFee"
                 type="number"
                 placeholder="100"
-                defaultValue={isUpdate ? doctor?.appoinmentFee : undefined}
+                defaultValue={
+                  state?.formData?.appoinmentFee ||
+                  (isUpdate ? doctor?.appoinmentFee : "")
+                }
                 min="0"
               />
               <InputFieldErrorMessage state={state} field="appoinmentFee" />
@@ -232,7 +290,10 @@ const DoctorFormDialog = ({
                 id="qualification"
                 name="qualification"
                 placeholder="MBBS, MD"
-                defaultValue={isUpdate ? doctor?.qualification : undefined}
+                defaultValue={
+                  state?.formData?.qualification ||
+                  (isUpdate ? doctor?.qualification : "")
+                }
               />
               <InputFieldErrorMessage state={state} field="qualification" />
             </Field>
@@ -246,7 +307,8 @@ const DoctorFormDialog = ({
                 name="currentWorkingPlace"
                 placeholder="City Hospital"
                 defaultValue={
-                  isUpdate ? doctor?.currentWorkingPlace : undefined
+                  state?.formData?.currentWorkingPlace ||
+                  (isUpdate ? doctor?.currentWorkingPlace : "")
                 }
               />
               <InputFieldErrorMessage
@@ -261,29 +323,52 @@ const DoctorFormDialog = ({
                 id="designation"
                 name="designation"
                 placeholder="Senior Consultant"
-                defaultValue={isUpdate ? doctor?.designation : undefined}
+                defaultValue={
+                  state?.formData?.designation ||
+                  (isUpdate ? doctor?.designation : "")
+                }
               />
               <InputFieldErrorMessage state={state} field="designation" />
             </Field>
 
-            {isUpdate && userInfo?.role === UserRoles.DOCTOR && (
-              <Field>
-                <FieldLabel htmlFor="profilePhoto">Profile Photo</FieldLabel>
-                <Input
-                  id="profilePhoto"
-                  name="profilePhoto"
-                  type="file"
-                  accept="image/*"
-                />
-                <InputFieldErrorMessage state={state} field="profilePhoto" />
-              </Field>
+            {!isUpdate && (
+              <div className="flex gap-4">
+                <Field className="">
+                  <FieldLabel htmlFor="profilePhoto">Photo</FieldLabel>
+                  <Input
+                    ref={fileInputRef}
+                    id="profilePhoto"
+                    name="profilePhoto"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    // defaultValue={isUpdate? doctor.profilePhoto:""}
+                  />
+                  <InputFieldErrorMessage state={state} field="profilePhoto" />
+                </Field>
+
+                <div className="flex mx-auto">
+                  {selectFile && (
+                    <Image
+                      src={
+                        typeof selectFile === "string"
+                          ? selectFile
+                          : URL.createObjectURL(selectFile)
+                      }
+                      alt="Profile Photo Preview"
+                      width={100}
+                      height={100}
+                    />
+                  )}
+                </div>
+              </div>
             )}
 
             <div className=" flex justify-end gap-2">
               <Button
                 type="button"
                 variant="outline"
-                onClick={onClose}
+                onClick={handleClose}
                 disabled={pending}
               >
                 Cancel

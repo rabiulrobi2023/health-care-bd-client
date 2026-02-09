@@ -25,24 +25,25 @@ const DcoctorManagementPage = async ({
   const queryString = getQueryString(queryObj);
 
   const doctor = await doctorService.getAllDoctros(queryString);
+
   const metaData = {
-    currentPage: doctor.data.meta.page,
-    totalPage: doctor.data.meta.totalPage,
+    currentPage: doctor?.data?.meta?.page,
+    totalPage: doctor?.data?.meta?.totalPage,
     maxPage: 5,
   };
 
   const specialtes = await specialtiesService.getAllSpecialties();
-  const userInfo = await getUserInfoFromToken() as TUserInfoFormToken;
+  const userInfo = (await getUserInfoFromToken()) as TUserInfoFormToken;
   const specialtiesData = await specialtes.data;
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <DoctorManagementHeader specialties={specialtes.data} />
+        <DoctorManagementHeader specialties={specialtes.data || []} />
         <div className="flex space-x-4 mt-5">
           <SearchFilter paramName="searchTerm" placeholder="Search doctor..." />
           <SelectFilter
-            paramName="specialty"
+            paramName="specialties"
             placeHolder="Select Specialty"
             options={specialtes?.data.map((specialty: TSpecialty) => ({
               label: specialty.title,
@@ -62,7 +63,7 @@ const DcoctorManagementPage = async ({
       </div>
       <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
         <DoctorManagementTable
-          doctor={doctor?.data?.data}
+          doctor={doctor.data.data}
           specialties={specialtiesData}
           userInfo={userInfo}
         />

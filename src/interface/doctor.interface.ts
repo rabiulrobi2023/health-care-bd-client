@@ -1,19 +1,20 @@
 import { TGender } from "./share.interface";
 
-export interface TDoctor {
+export interface IDoctor {
   id?: string;
   email: string;
   name: string;
   contactNumber: string;
   address?: string;
   gender: TGender;
-  profilePhoto?: string;
+  profilePhoto?: File | string;
   qualification: string;
   registrationNumber: string;
   experience: number;
   currentWorkingPlace: string;
   designation: string;
   specialties: string[];
+  removedSpecialties?: string[];
   appoinmentFee: number;
   rating?: number;
   createdAt?: string;

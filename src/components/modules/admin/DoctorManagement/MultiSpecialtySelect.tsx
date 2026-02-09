@@ -38,6 +38,7 @@ const MultiSpecialtySelect = ({
   getSpecialtyTitle,
   getNewSpecialtes,
 }: ISpecialyMultiSelectProps) => {
+
   return (
     <Field>
       <FieldLabel htmlFor="specialties">Specialties</FieldLabel>
@@ -51,7 +52,7 @@ const MultiSpecialtySelect = ({
 
       <Input
         type="hidden"
-        name="removeSpecialties"
+        name="removedSpecialties"
         value={JSON.stringify(removedSpecialtyIds)}
       />
 
@@ -109,11 +110,11 @@ const MultiSpecialtySelect = ({
           Add
         </Button>
       </div>
-      <p className="text-sn text-red-500">
-        {isEdit
+      <p>
+        {isEdit 
           ? "Add new specialties or remove existing ones"
-          : selectedSpecialtyIds.length === 0 &&
-            "Select at least one specialty for the doctor"}
+          : selectedSpecialtyIds.length === 0?
+            "Select at least one specialty for the doctor":""}
       </p>
 
       {isEdit && (

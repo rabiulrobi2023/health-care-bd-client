@@ -28,14 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased text-gray-600`}
-        cz-shortcut-listen="true"
-  
       >
         {children}
         <Toaster richColors position="top-right" />
         <LoginSuccessToast />
-        <LogoutSuccessToast  />
+        <LogoutSuccessToast />
       </body>
     </html>
   );

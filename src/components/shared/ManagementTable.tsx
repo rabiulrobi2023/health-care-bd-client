@@ -88,7 +88,7 @@ export default function ManagementTable<T>({
             <TableRow>
               <TableCell
                 colSpan={columns.length + (hasAction ? 1 : 0)}
-                className="text-center py-6 text-muted-foreground"
+                className="text-center py-6  text-xl text-red-600"
               >
                 {emptyMessage}
               </TableCell>
