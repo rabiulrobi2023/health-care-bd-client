@@ -23,6 +23,7 @@ const doctorColumn: TColumn<IDoctor>[] = [
 
   {
     header: "Specialties",
+    sortKey:"specialty",
     accessor: (doctor) => (
       <div className="flex gap-1 flex-wrap">
         {doctor?.doctorSpecialties && doctor?.doctorSpecialties?.length > 0 ? (
@@ -51,6 +52,7 @@ const doctorColumn: TColumn<IDoctor>[] = [
   },
   {
     header: "Experience",
+    sortKey:"experience",
     accessor: (doctor) => (
       <div>
         <span>
@@ -62,6 +64,7 @@ const doctorColumn: TColumn<IDoctor>[] = [
 
   {
     header: "Fee",
+    sortKey:"appoinmentFee",
     accessor: (doctor) => <span>৳{doctor.appoinmentFee} </span>,
   },
   {
@@ -92,6 +95,7 @@ const doctorColumn: TColumn<IDoctor>[] = [
 
   {
     header: "Joining Date",
+    sortKey:"createdAt",
     accessor: (doctor) => <DateCell date={doctor.createdAt as string | Date} />,
   },
 ];

@@ -1,6 +1,7 @@
 import DoctorManagementHeader from "@/components/modules/admin/DoctorManagement/DoctorManagementHeader";
 import DoctorManagementTable from "@/components/modules/admin/DoctorManagement/DoctorManagementTable";
 import { TSpecialty } from "@/components/modules/admin/SpecialtiesManagement/specialty.interface";
+import ClearFilterButton from "@/components/shared/ClearFilterButton";
 import RefreshButton from "@/components/shared/RefreshButton";
 import SearchFilter from "@/components/shared/SearchFilter";
 import SelectFilter from "@/components/shared/SelectFilter";
@@ -25,11 +26,13 @@ const DcoctorManagementPage = async ({
   const queryString = getQueryString(queryObj);
 
   const doctor = await doctorService.getAllDoctros(queryString);
+  console.log(doctor)
 
   const metaData = {
     currentPage: doctor?.data?.meta?.page,
     totalPage: doctor?.data?.meta?.totalPage,
     maxPage: 5,
+    limit: doctor?.data?.meta?.limit,
   };
 
   const specialtes = await specialtiesService.getAllSpecialties();
@@ -44,7 +47,8 @@ const DcoctorManagementPage = async ({
           <SearchFilter paramName="searchTerm" placeholder="Search doctor..." />
           <SelectFilter
             paramName="specialties"
-            placeHolder="Select Specialty"
+            placeholder="Specialty"
+            defaultValue="All Specialties"
             options={specialtes?.data.map((specialty: TSpecialty) => ({
               label: specialty.title,
               value: specialty.title,
@@ -52,18 +56,21 @@ const DcoctorManagementPage = async ({
           />
           <SelectFilter
             paramName="gender"
-            placeHolder="Select Gender"
+            placeholder="Specialty"
+            defaultValue="All Gender"
             options={Object.keys(Gender)?.map((gen) => ({
               label: gen,
               value: gen,
             }))}
           />
+
+          <ClearFilterButton />
           <RefreshButton showLabel={true} />
         </div>
       </div>
       <Suspense fallback={<TableSkeleton columns={10} rows={10} />}>
         <DoctorManagementTable
-          doctor={doctor.data.data}
+          doctor={doctor?.data?.data}
           specialties={specialtiesData}
           userInfo={userInfo}
         />
@@ -71,6 +78,7 @@ const DcoctorManagementPage = async ({
           currentPage={metaData.currentPage}
           totalpage={metaData.totalPage}
           maxPage={metaData.maxPage}
+          limit={metaData.limit}
         />
       </Suspense>
     </div>

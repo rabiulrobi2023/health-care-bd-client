@@ -1,13 +1,16 @@
 "use client";
 
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   Edit,
   Eye,
   Loader2,
   MoreHorizontal,
   Trash,
 } from "lucide-react";
-import React from "react";
+import React, { useTransition } from "react";
 import {
   Table,
   TableBody,
@@ -24,11 +27,13 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export type TColumn<T> = {
   header: string;
   accessor: keyof T | ((row: T) => React.ReactNode);
   className?: string;
+  sortKey?: string;
 };
 
 type TManagementTableProps<T> = {
@@ -54,6 +59,48 @@ export default function ManagementTable<T>({
 }: TManagementTableProps<T>) {
   const hasAction = Boolean(onView || onEdit || onDelete);
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [, startTransition] = useTransition();
+
+  const currentSortBy = searchParams.get("sortBy") || "";
+  const currentSortOrder = searchParams.get("sortOrder") || "";
+const handleSort = (sortKey: string) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  const isSameColumn = currentSortBy === sortKey;
+
+  const nextOrder = isSameColumn
+    ? currentSortOrder === "asc"
+      ? "desc"
+      : "asc"
+    : "desc";
+
+  params.set("sortBy", sortKey);
+  params.set("sortOrder", nextOrder);
+  params.set("page", "1");
+
+  startTransition(() => {
+    router.push(`?${params.toString()}`);
+  });
+};
+  const getSortIcon = (sortKey?: string) => {
+  if (!sortKey) return null;
+
+  // Not active column
+  if (currentSortBy !== sortKey) {
+    return (
+      <ArrowUpDown className="w-4 text-muted-foreground" />
+    );
+  }
+
+  // Active column
+  if (currentSortOrder === "asc") {
+    return <ArrowUp className="w-4 text-primary" />;
+  }
+
+  return <ArrowDown className="w-4 text-primary" />;
+};
   return (
     <div className="relative rounded-md border overflow-auto">
       {/* Loading Overlay */}
@@ -66,17 +113,28 @@ export default function ManagementTable<T>({
       <Table>
         <TableHeader>
           <TableRow className="bg-green-100">
-            {columns.map((column, index) => (
+            {columns.map((column) => (
               <TableHead
-                key={index}
+                key={column.sortKey ?? column.header}
                 className={cn("font-semibold", column.className)}
               >
-                {column.header}
+                {column.sortKey ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSort(column.sortKey!)}
+                    className="flex items-center gap-1 cursor-pointer hover:text-primary transition-colors"
+                  >
+                    {column.header}
+                    {getSortIcon(column.sortKey)}
+                  </button>
+                ) : (
+                  column.header
+                )}
               </TableHead>
             ))}
 
             {hasAction && (
-              <TableHead className=" text-right">
+              <TableHead className="text-right font-semibold">
                 Actions
               </TableHead>
             )}
@@ -84,7 +142,7 @@ export default function ManagementTable<T>({
         </TableHeader>
 
         <TableBody>
-          {data.length === 0 ? (
+          {data?.length === 0 ? (
             <TableRow>
               <TableCell
                 colSpan={columns.length + (hasAction ? 1 : 0)}
@@ -94,12 +152,12 @@ export default function ManagementTable<T>({
               </TableCell>
             </TableRow>
           ) : (
-            data.map((row, rowIndex) => (
+            data?.map((row, rowIndex) => (
               <TableRow
                 key={getRowKey ? getRowKey(row) : rowIndex}
                 className="hover:bg-muted/50"
               >
-                {columns.map((col, colIndex) => (
+                {columns?.map((col, colIndex) => (
                   <TableCell key={colIndex} className={col.className}>
                     {typeof col.accessor === "function"
                       ? col.accessor(row)

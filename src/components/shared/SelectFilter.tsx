@@ -1,12 +1,11 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
@@ -14,44 +13,57 @@ import { useTransition } from "react";
 
 type TSelectFilterProps = {
   paramName: string;
-  placeHolder?: string;
+  placeholder?: string;
+  defaultValue: string;
   options: { label: string; value: string }[];
 };
 
 const SelectFilter = ({
   paramName,
-  placeHolder,
+  placeholder,
   options,
+  defaultValue,
 }: TSelectFilterProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const currentValue = searchParams.get(paramName) || "all";
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
-  const handleChange = (value: string = currentValue) => {
+  const currentValue = searchParams.get(paramName) ?? defaultValue;
+
+  const handleChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === "all") {
+
+    if (value === defaultValue) {
       params.delete(paramName);
     } else {
       params.set(paramName, value);
     }
 
     startTransition(() => {
-      router.push(`?${params.toString()}`);
+      const queryString = params.toString();
+      router.push(queryString ? `${pathname}?${queryString}` : pathname);
     });
   };
 
   return (
-    <Select onValueChange={handleChange} disabled={isPending}>
+    <Select
+      value={currentValue}
+      onValueChange={handleChange}
+      disabled={isPending}
+    >
       <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder={placeHolder} />
+        <SelectValue placeholder={placeholder} />
       </SelectTrigger>
+
       <SelectContent>
         <SelectGroup>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value={defaultValue}>
+            {defaultValue}
+          </SelectItem>
+
           {options.map((option) => (
-            <SelectItem value={option.value} key={option.value}>
+            <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>
           ))}

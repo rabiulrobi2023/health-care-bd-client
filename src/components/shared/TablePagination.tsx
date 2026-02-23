@@ -5,18 +5,26 @@ import { useTransition } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface ITablepaginationProps {
   currentPage: number;
   totalpage: number;
-  maxPage?: number;
+  maxPage: number;
+  limit: number;
 }
 
-const getVisiblePages = (
-  currentPage: number,
-  totalpage: number,
-  maxPage: number = 5
-) => {
+const getVisiblePages = ({
+  currentPage,
+  totalpage,
+  maxPage,
+}: ITablepaginationProps) => {
   if (totalpage <= maxPage) {
     return Array.from({ length: totalpage }, (_, i) => i + 1);
   }
@@ -33,6 +41,7 @@ const TablePagination = ({
   currentPage,
   totalpage,
   maxPage = 5,
+  limit,
 }: ITablepaginationProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,7 +59,17 @@ const TablePagination = ({
     });
   };
 
-  const pages = getVisiblePages(currentPage, totalpage, maxPage);
+  const pages = getVisiblePages({ currentPage, totalpage, maxPage, limit });
+
+  const changeLimit = (newLimit: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("limit", newLimit);
+    params.set("page", "1");
+    startTransition(() => router.push(`?${params.toString()}`));
+  };
+
+  const limits = [1, 2, 3, 4, 5, 10, 20, 30, 50];
+  const currentLimit = limit;
 
   return (
     <div className="flex gap-2 items-center justify-end">
@@ -70,7 +89,7 @@ const TablePagination = ({
             key={page}
             className={cn(
               "bg-transparent border-0 hover:text-green-700 hover:bg-transparent text-gray-400 w-0 h-0 p-0",
-              currentPage === page && "text-primary font-bold"
+              currentPage === page && "text-primary font-bold",
             )}
             disabled={isPending}
             onClick={() => navigateToPage(page)}
@@ -93,6 +112,28 @@ const TablePagination = ({
       <span className="ml-2 text-sm text-muted-foreground">
         Page {currentPage} of {totalpage}
       </span>
+
+      <div className="flex items-center gap-2">
+        <label htmlFor="limit" className="text-sm text-muted-foreground">
+          Item Per Page
+        </label>
+        <Select
+          value={String(limit)}
+          onValueChange={changeLimit}
+          disabled={isPending}
+        >
+          <SelectTrigger id="limit" aria-label="Items" className="w-[80px] h-8">
+            <SelectValue placeholder={currentLimit} />
+          </SelectTrigger>
+          <SelectContent>
+            {limits.map((limit) => (
+              <SelectItem key={limit} value={String(limit)}>
+                {limit}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };
